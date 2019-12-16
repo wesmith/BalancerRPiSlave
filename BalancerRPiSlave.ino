@@ -1,34 +1,47 @@
-// This example shows how to make a Balboa balance on its two
-// wheels and drive around while balancing.
-//
-// To run this demo, you will need to install the LSM6 library:
-//
-// https://github.com/pololu/lsm6-arduino
-//
-// To use this demo, place the robot on the ground with the
-// circuit board facing up, and then turn it on.  Be careful to
-// not move the robot for a few seconds after powering it on,
-// because that is when the gyro is calibrated.  During the gyro
-// calibration, the red LED is lit.  After the red LED turns off,
-// turn the robot so that it is standing up.  It will detect that
-// you have turned it and start balancing.
-//
-// Alternatively, you can press the A button while the robot is
-// lying down and it will try to use its motors to kick up into
-// the balancing position.
-//
-// This demo is tuned for the 50:1 high-power gearmotor with
-// carbon brushes, 45:21 plastic gears, and 80mm wheels; you will
-// need to adjust the parameters in Balance.h for your robot.
-//
-// After you have gotten the robot balance well, you can
-// uncomment some lines in loop() to make it drive around and
-// play a song.
+// WSmith modified this from Balancer.ino and BalboaRPiSlaveDemo.ino, 
+// 12/16/19
+// Run the Balboa balancer as an I2C slave from an RPi I2C master.
+// See Balancer.ino comments (deleted here) for more info 
+// about the balancer.
+
+// THIS CANNOT WORK AS SET UP: THE RPI MASTER I2C IS CONFLICTING WITH THE 
+// ARDUINO AS MASTER i2C WITH THE IMU (AND PERHAPS OTHER ITEMS)
+// NEED TO ACCESS THE IMU, ENCODERS, ETC JUST FROM THE RPI
+// IE, THERE IS A WIRE CONFLICT WITH POLOLURPISLAVE
 
 #include <Balboa32U4.h>
 #include <Wire.h>
 #include <LSM6.h>
-#include "Balance.h"
+#include "BalancerRPiSlave.h"
+#include <PololuRPiSlave.h>
+
+// I2C slave setup
+// Custom data structure used for interpreting the buffer.
+// Keep this under 64 bytes total.  If the
+// data format is changed, make sure to update the corresponding 
+// code in a_star.py on the Raspberry Pi.
+
+struct Data
+{
+  bool yellow, green, red;
+  bool buttonA, buttonB, buttonC;
+
+  int16_t leftMotor, rightMotor;
+  uint16_t batteryMillivolts;
+  uint16_t analog[6];
+
+  bool playNotes;
+  char notes[14];
+
+  int16_t leftEncoder, rightEncoder;
+};
+
+// set up template: 
+// PololuRPiSlave<class BufferType, unsigned int pi_delay_us>
+// pi_delay_us should be set to 20 for the RPI 3b: that worked 12/13/19
+PololuRPiSlave<struct Data, 20> slave; 
+
+// end I2C slave setup
 
 LSM6 imu;
 Balboa32U4Motors motors;
@@ -40,11 +53,14 @@ Balboa32U4ButtonC buttonC;
 
 void setup()
 {
-  // Uncomment these lines if your motors are reversed.
+  // Uncomment these lines if the motors are reversed.
   // motors.flipLeftMotor(true);
   // motors.flipRightMotor(true);
 
-  Serial.begin(9600);  // WS
+  // Set up the slave at I2C address 20.
+  slave.init(20);
+
+  //Serial.begin(9600);  // see if turning this off fixes compile problem: no
 
   ledYellow(0);
   ledRed(1);
@@ -122,6 +138,10 @@ void standUp()
 
 void loop()
 {
+  // Call updateBuffer() before using the buffer, to get the latest
+  // data including recent master writes.
+  slave.updateBuffer();
+
   static bool enableSong = false;
   static bool enableDrive = false;
 
@@ -160,38 +180,7 @@ void loop()
   // Illuminate the red LED if the last full update was too slow.
   ledRed(balanceUpdateDelayed());
 
-  // Display feedback on the yellow and green LEDs depending on
-  // the variable fallingAngleOffset.  This variable is similar
-  // to the risingAngleOffset used in Balance.cpp.
-  //
-  // When the robot is rising toward vertical (not falling),
-  // angleRate and angle have opposite signs, so this variable
-  // will just be positive or negative depending on which side of
-  // vertical it is on.
-  //
-  // When the robot is falling, the variable measures how far off
-  // it is from a trajectory starting it almost perfectly
-  // balanced then falling to one side or the other with the
-  // motors off.
-  //
-  // Since this depends on ANGLE_RATE_RATIO, it is useful for
-  // calibration.  If you have changed the wheels or added weight
-  // to your robot, you can try checking these items, with the
-  // motor power OFF (powered by USB):
-  //
-  // 1. Try letting the robot fall with the Balboa 32U4 PCB up.
-  //    The green LED should remain lit the entire time.  If it
-  //    sometimes shows yellow instead of green, reduce
-  //    ANGLE_RATE_RATIO.
-  //
-  // 2. If it is tilted beyond vertical and given a push back to
-  //    the PCB-up side again, the yellow LED should remain lit
-  //    until it hits the ground.  If you see green, increase
-  //    ANGLE_RATE_RATIO.
-  //
-  // In practice, it is hard to achieve both 1 and 2 perfectly,
-  // but if you can get close, your constant will probably be
-  // good enough for balancing.
+  // the following variable for diagnostics
   int32_t fallingAngleOffset = angleRate * ANGLE_RATE_RATIO - angle;
 
   /*
@@ -203,7 +192,6 @@ void loop()
   Serial.println(float(angle) / float(angleRate));
   */
  
-
   if (fallingAngleOffset > 0)
   {
     ledYellow(1);
@@ -214,4 +202,7 @@ void loop()
     ledYellow(0);
     ledGreen(1);
   }
+  // When WRITING is finished, call finalizeWrites() to make modified
+  // data available to the I2C master.
+  slave.finalizeWrites();
 }
