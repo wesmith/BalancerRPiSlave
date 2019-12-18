@@ -11,7 +11,10 @@ lsm6 = ls.LSM6()
 
 lsm6.setup()
 
-while(True):
+lsm6.verifyWrite()
+
+for k in range(100):
+#while(True):
 
     name = 'accel'
     ll, bb, rr = lsm6.getData(name)

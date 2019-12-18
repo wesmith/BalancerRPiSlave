@@ -47,7 +47,8 @@ class LSM6:
       print ('LSM6 identified successfully')
     else:
       txt = 'LSM6 error: tried address {}, IDreg {}, ID should be {}, found {}'.\
-            format(self.address, self.WHO_AM_I, self.DS33_WHO_ID, val[0])
+            format(hex(self.address), hex(self.WHO_AM_I),
+                   hex(self.DS33_WHO_ID), hex(val[0]))
       print (txt)
       return
 
@@ -81,7 +82,20 @@ class LSM6:
     # see datasheet p. 49
     self.write_pack(self.CTRL3_C, 'B', 0x40)
 
-    
+    time.sleep(1) # wait a second for readings to stabilize
+
+  def verifyWrite(self):
+    # verify that registers have been set correctly
+    ctrl1 = self.read_unpack(self.CTRL1_XL, 1, 'B')
+    ctrl2 = self.read_unpack(self.CTRL2_G,  1, 'B')
+    ctrl3 = self.read_unpack(self.CTRL3_C,  1, 'B')
+    txt = 'register {} should be {}, it is {}'.\
+          format(hex(self.CTRL1_XL), 0x80, hex(ctrl1))
+    txt = 'register {} should be {}, it is {}'.\
+          format(hex(self.CTRL2_G),  0x58, hex(ctrl2))
+    txt = 'register {} should be {}, it is {}'.\
+          format(hex(self.CTRL3_C),  0x40, hex(ctrl3))
+
   def getData(self, name):
     dd = {'accel': self.OUTX_L_XL, 'gyro': self.OUTX_L_G}
     
