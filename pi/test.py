@@ -16,7 +16,7 @@ while(True):
 
     for k in ['accel']:
         ll, bb, rrs, rru = lsm6.getData(k)
-        print('{}: raw_s {}  raw_u {}'.format(rrs, rru))
+        print('{}: raw_s {}  raw_u {}'.format(k, rrs, rru))
 
 
     #print('{}: little {}, big {}, raw {}'.\
