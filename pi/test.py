@@ -13,7 +13,7 @@ lsm6.setup()
 
 lsm6.verifyWrite()
 
-for k in range(100):
+for k in range(30):
 #while(True):
 
     name = 'accel'

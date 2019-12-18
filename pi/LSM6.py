@@ -86,16 +86,14 @@ class LSM6:
 
   def verifyWrite(self):
     # verify that registers have been set correctly
-    ctrl1 = self.read_unpack(self.CTRL1_XL, 1, 'B')
-    ctrl2 = self.read_unpack(self.CTRL2_G,  1, 'B')
-    ctrl3 = self.read_unpack(self.CTRL3_C,  1, 'B')
-    txt = 'register {} should be {}, it is {}'.\
-          format(hex(self.CTRL1_XL), 0x80, hex(ctrl1[0]))
-    txt = 'register {} should be {}, it is {}'.\
-          format(hex(self.CTRL2_G),  0x58, hex(ctrl2[0]))
-    txt = 'register {} should be {}, it is {}'.\
-          format(hex(self.CTRL3_C),  0x40, hex(ctrl3[0]))
-
+    regs = [self.CTRL1_XL, self.CTRL2_G, self.CTRL3_C]
+    vals = [0x80, 0x58, 0x40]
+    for j,k in zip(regs, vals):
+      ctrl = self.read_unpack(j, 1, 'B')
+      txt = 'register {} should be {}, it is {}'.\
+            format(hex(j), k, hex(ctrl[0]))
+    print(txt)
+          
   def getData(self, name):
     dd = {'accel': self.OUTX_L_XL, 'gyro': self.OUTX_L_G}
     
