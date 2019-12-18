@@ -16,7 +16,7 @@ while(True):
     ll, bb, rr = lsm6.getGyro()
 
     print('z-gyro: little {}, big {}, raw low {}, raw high {}'.\
-          format(ll[2], bb[2], r[4], r[5]))
+          format(ll[2], bb[2], rr[4], rr[5]))
     time.sleep(0.5)
 
     
