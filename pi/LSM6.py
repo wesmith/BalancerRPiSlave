@@ -17,7 +17,7 @@ class LSM6:
     self.IDreg    = 0x0f  # register containing device ID
     self.ID       = 0x69  # device ID
     txt = 'LSM6: address {}, IDreg {}, ID {}'.\
-            format(self.address, self.IDreg, self.ID)
+            format(hex(self.address), hex(self.IDreg), hex(self.ID))
     print(txt)
     self.setup()
 
@@ -43,6 +43,8 @@ class LSM6:
       txt = 'LSM6 error: tried address {}, IDreg {}, ID should be {}, found {}'.\
             format(self.address, self.IDreg, self.ID, val[0])
       print (txt)
+      return
+    
 
       
 '''
