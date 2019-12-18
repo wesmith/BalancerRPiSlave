@@ -23,7 +23,7 @@ class LSM6:
     self.OUTX_L_XL   = 0x28  # accelerometer array start (low then high byte, each for x,y,z)
     
     txt = 'LSM6: address {}, IDreg {}, ID {}'.\
-            format(hex(self.address), hex(self.IDreg), hex(self.ID))
+            format(hex(self.address), hex(self.WHO_AM_I), hex(self.DS33_WHO_ID))
     print(txt)
     self.setup()
 
