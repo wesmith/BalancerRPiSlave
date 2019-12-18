@@ -16,6 +16,9 @@ class LSM6:
     self.address  = 0x6b  # LSM6 I2C address
     self.IDreg    = 0x0f  # register containing device ID
     self.ID       = 0x69  # device ID
+    txt = 'LSM6: address {}, IDreg {}, ID {}'.\
+            format(self.address, self.IDreg, self.ID)
+    print(txt)
     self.setup()
 
   def read_unpack(self, address, size, format):
@@ -33,10 +36,13 @@ class LSM6:
     time.sleep(0.0001)
 
   def setup(self):
-    if (self.read_unpack(self.IDreg, 1, 'B') == self.ID):
+    val = self.read_unpack(self.IDreg, 1, 'B')
+    if (val == self.ID):
       print ('LSM6 identified successfully')
     else:
-      print ('LSM6 not found')
+      txt = 'LSM6 error: tried address {}, IDreg {}, ID should be {}, found {}'.\
+            format(self.address, self.IDreg, self.ID, val)
+      print (txt)
 
       
 '''

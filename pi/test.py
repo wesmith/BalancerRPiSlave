@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 # test.py
 # WESmith 12/18/19
 # test LSM6 class
