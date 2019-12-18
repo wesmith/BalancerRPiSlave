@@ -86,7 +86,8 @@ class LSM6:
     # 'h' is short integer (2 bytes each): must verify endian-order is correct
     lit_end = self.read_unpack(self.OUTX_L_G, 6, '<3h')  # get using little-endian
     big_end = self.read_unpack(self.OUTX_L_G, 6, '>3h')  # get using big-endian
-    return lit_end, big_end
+    raw     = self.read_unpack(self.OUTX_L_G, 6, 'bBbBbB') # unsigned low, signed high
+    return lit_end, big_end, raw
     
     
       
