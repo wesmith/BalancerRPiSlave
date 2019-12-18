@@ -91,8 +91,8 @@ class LSM6:
     for j,k in zip(regs, vals):
       ctrl = self.read_unpack(j, 1, 'B')
       txt = 'register {} should be {}, it is {}'.\
-            format(hex(j), k, hex(ctrl[0]))
-    print(txt)
+            format(hex(j), hex(k), hex(ctrl[0]))
+      print(txt)
           
   def getData(self, name):
     dd = {'accel': self.OUTX_L_XL, 'gyro': self.OUTX_L_G}
