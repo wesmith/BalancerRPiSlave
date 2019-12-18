@@ -13,10 +13,11 @@ lsm6.setup()
 
 while(True):
 
-    ll, bb, rr = lsm6.getGyro()
+    name = 'accel'
+    ll, bb, rr = lsm6.getData(name)
 
-    print('z-gyro: little {}, big {}, raw low {}, raw high {}'.\
-          format(ll[2], bb[2], rr[4], rr[5]))
+    print('{}: little {}, big {}, raw {}'.\
+          format(name, ll, bb, rr))
     time.sleep(0.5)
 
     

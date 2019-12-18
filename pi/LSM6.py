@@ -82,13 +82,14 @@ class LSM6:
     self.write_pack(self.CTRL3_C, 'B', 0x40)
 
     
-  def getGyro(self):
-    # 'h' is short integer (2 bytes each): must verify endian-order is correct
-    lit_end = self.read_unpack(self.OUTX_L_G, 6, '<3h')  # get using little-endian
-    big_end = self.read_unpack(self.OUTX_L_G, 6, '>3h')  # get using big-endian
-    raw     = self.read_unpack(self.OUTX_L_G, 6, 'bBbBbB') # unsigned low, signed high
-    return lit_end, big_end, raw
+  def getData(self, name):
+    dd = {'accel': self.OUTX_L_XL, 'gyro': self.OUTX_L_G}
     
+    # 'h' is short integer (2 bytes each): must verify endian-order is correct
+    lit_end = self.read_unpack(dd[name], 6, '<3h')  # get using little-endian
+    big_end = self.read_unpack(dd[name], 6, '>3h')  # get using big-endian
+    raw     = self.read_unpack(dd[name], 6, '6b')   # 'b' is signed char
+    return lit_end, big_end, raw
     
       
 '''
