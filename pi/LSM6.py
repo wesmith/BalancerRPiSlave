@@ -84,8 +84,8 @@ class LSM6:
     
   def getGyro(self):
     # 'h' is short integer (2 bytes each): must verify endian-order is correct
-    lit_end = read_unpack(self.OUTX_L_G, 3, '<3h')  # get using little-endian
-    big_end = read_unpack(self.OUTX_L_G, 3, '>3h')  # get using big-endian
+    lit_end = self.read_unpack(self.OUTX_L_G, 3, '<3h')  # get using little-endian
+    big_end = self.read_unpack(self.OUTX_L_G, 3, '>3h')  # get using big-endian
     return lit_end, big_end
     
     
