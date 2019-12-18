@@ -9,18 +9,19 @@ import time
 
 lsm6 = ls.LSM6()
 
-lsm6.setup()
-
 lsm6.verifyWrite()
 
-for k in range(30):
-#while(True):
+#for k in range(30):
+while(True):
 
-    name = 'accel'
-    ll, bb, rr = lsm6.getData(name)
+    for k in ['accel']:
+        ll, bb, rrs, rru = lsm6.getData(k)
+        print('{}: raw_s {}  raw_u {}'.format(rrs, rru))
 
-    print('{}: little {}, big {}, raw {}'.\
-          format(name, ll, bb, rr))
-    time.sleep(0.5)
+
+    #print('{}: little {}, big {}, raw {}'.\
+    #      format(name, ll, bb, rr))
+    
+    time.sleep(0.2)
 
     

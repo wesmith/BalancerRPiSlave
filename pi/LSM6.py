@@ -100,8 +100,9 @@ class LSM6:
     # 'h' is short integer (2 bytes each): must verify endian-order is correct
     lit_end = self.read_unpack(dd[name], 6, '<3h')  # get using little-endian
     big_end = self.read_unpack(dd[name], 6, '>3h')  # get using big-endian
-    raw     = self.read_unpack(dd[name], 6, '6b')   # 'b' is signed char
-    return lit_end, big_end, raw
+    raw_s   = self.read_unpack(dd[name], 6, '6b')   # 'b' is signed char
+    raw_u   = self.read_unpack(dd[name], 6, '6B')   # 'B' is unsigned char    
+    return lit_end, big_end, raw_s, raw_u
     
       
 '''
