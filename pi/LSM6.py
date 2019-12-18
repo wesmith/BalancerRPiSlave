@@ -1,4 +1,7 @@
 # Copyright Pololu Corporation.  For more information, see https://www.pololu.com/
+
+# WSmith copied this file from a_star.py, to create a class to                                 # read the LSM6 accelerometer/magnetometer chip on the Balboa board,                           # from the RPi.      
+
 import smbus
 import struct
 import time
