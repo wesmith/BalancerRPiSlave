@@ -90,11 +90,11 @@ class LSM6:
     ctrl2 = self.read_unpack(self.CTRL2_G,  1, 'B')
     ctrl3 = self.read_unpack(self.CTRL3_C,  1, 'B')
     txt = 'register {} should be {}, it is {}'.\
-          format(hex(self.CTRL1_XL), 0x80, hex(ctrl1))
+          format(hex(self.CTRL1_XL), 0x80, hex(ctrl1[0]))
     txt = 'register {} should be {}, it is {}'.\
-          format(hex(self.CTRL2_G),  0x58, hex(ctrl2))
+          format(hex(self.CTRL2_G),  0x58, hex(ctrl2[0]))
     txt = 'register {} should be {}, it is {}'.\
-          format(hex(self.CTRL3_C),  0x40, hex(ctrl3))
+          format(hex(self.CTRL3_C),  0x40, hex(ctrl3[0]))
 
   def getData(self, name):
     dd = {'accel': self.OUTX_L_XL, 'gyro': self.OUTX_L_G}
