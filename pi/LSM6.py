@@ -1,41 +1,47 @@
 # Copyright Pololu Corporation.  For more information, see https://www.pololu.com/
 
-# WSmith copied this file from a_star.py, to create a class to                                 # read the LSM6 accelerometer/magnetometer chip on the Balboa board,                           # from the RPi.      
+'''
+WSmith copied this file from Pololu's a_star.py, to create a class to
+read the LSM6 accelerometer/magnetometer chip on the Pololu Balboa board,
+from the RPi.
+'''      
 
 import smbus
 import struct
 import time
 
-class AStar:
+class LSM6:
   def __init__(self):
     self.bus = smbus.SMBus(1)
+    self.address  = 0x6b  # LSM6 I2C address
+    self.IDreg    = 0x0f  # register containing device ID
+    self.ID       = 0x69  # device ID
+    self.setup()
 
   def read_unpack(self, address, size, format):
-    # Ideally we could do this:
-    #    byte_list = self.bus.read_i2c_block_data(20, address, size)
-    # But the AVR's TWI module can't handle a quick write->read transition,
-    # since the STOP interrupt will occasionally happen after the START
-    # condition, and the TWI module is disabled until the interrupt can
-    # be processed.
-    #
     # A delay of 0.0001 (100 us) after each write is enough to account
-    # for the worst-case situation in our example code.
+    # for the worst-case situation.
 
-    self.bus.write_byte(20, address)
+    self.bus.write_byte(self.address, address)
     time.sleep(0.0001)
-    byte_list = [self.bus.read_byte(20) for _ in range(size)]
+    byte_list = [self.bus.read_byte(self.address) for _ in range(size)]
     return struct.unpack(format, bytes(byte_list))
 
   def write_pack(self, address, format, *data):
     data_array = list(struct.pack(format, *data))
-    self.bus.write_i2c_block_data(20, address, data_array)
+    self.bus.write_i2c_block_data(self.address, address, data_array)
     time.sleep(0.0001)
 
+  def setup(self):
+    if (self.read_unpack(self.IDreg, 1, 'B') == self.ID):
+      print ('LSM6 identified successfully')
+    else:
+      print ('LSM6 not found')
+
+      
+'''
   def leds(self, red, yellow, green):
     self.write_pack(0, 'BBB', red, yellow, green)
-
-  def play_notes(self, notes):
-    self.write_pack(24, 'B15s', 1, notes.encode("ascii"))
 
   def motors(self, left, right):
     self.write_pack(6, 'hh', left, right)
@@ -56,5 +62,6 @@ class AStar:
     self.read_unpack(0, 8, 'cccccccc')
 
   def test_write8(self):
-    self.bus.write_i2c_block_data(20, 0, [0,0,0,0,0,0,0,0])
+    self.bus.write_i2c_block_data(self.address, 0, [0,0,0,0,0,0,0,0])
     time.sleep(0.0001)
+'''
