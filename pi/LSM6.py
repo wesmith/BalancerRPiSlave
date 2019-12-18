@@ -37,11 +37,11 @@ class LSM6:
 
   def setup(self):
     val = self.read_unpack(self.IDreg, 1, 'B')
-    if (val == self.ID):
+    if (val[0] == self.ID):
       print ('LSM6 identified successfully')
     else:
       txt = 'LSM6 error: tried address {}, IDreg {}, ID should be {}, found {}'.\
-            format(self.address, self.IDreg, self.ID, val)
+            format(self.address, self.IDreg, self.ID, val[0])
       print (txt)
 
       
