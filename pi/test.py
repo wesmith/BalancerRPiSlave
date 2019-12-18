@@ -9,3 +9,9 @@ import LSM6 as ls
 lsm6 = ls.LSM6()
 
 lsm6.setup()
+
+while(True):
+
+    ll, bb = lsm6.getGyro()
+
+    print('z-gyro: little {}, big {}'.format(ll[0], bb[0]))

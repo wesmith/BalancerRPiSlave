@@ -42,7 +42,7 @@ class LSM6:
     time.sleep(0.0001)
 
   def setup(self):
-    val = self.read_unpack(self.WHO_AM_I, 1, 'B')
+    val = self.read_unpack(self.WHO_AM_I, 1, 'B')  # 'B': unsigned char: see python struct info
     if (val[0] == self.DS33_WHO_ID):
       print ('LSM6 identified successfully')
     else:
@@ -80,6 +80,14 @@ class LSM6:
     # 0 SW reset, 0 is normal mode
     # see datasheet p. 49
     self.write_pack(self.CTRL3_C, 'B', 0x40)
+
+    
+  def getGyro(self):
+    # 'h' is short integer (2 bytes each): must verify endian-order is correct
+    lit_end = read_unpack(self.OUTX_L_G, 3, '<3h')  # get using little-endian
+    big_end = read_unpack(self.OUTX_L_G, 3, '>3h')  # get using big-endian
+    return lit_end, big_end
+    
     
       
 '''
