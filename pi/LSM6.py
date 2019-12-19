@@ -118,7 +118,7 @@ class LSM6:
           format([hex(out[0]), hex(out[1]), hex(out[2])])
     print(txt)
     # fourth test
-    out = self.assemble_data(self.CTRL1_XL, 3)
+    out = self.assembleData(self.CTRL1_XL, 3)
     txt = 'fourth  test: values from 3 registers in one read: {}'.\
           format([hex(out[0]), hex(out[1]), hex(out[2])])
     print(txt)
