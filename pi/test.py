@@ -12,7 +12,7 @@ lsm6 = ls.LSM6()
 lsm6.verifyWrite()
 time.sleep(1)
 
-for k in range(30):
+for k in range(100):
 #while(True):
 
     accl = lsm6.getRaw('accel', 6)
@@ -34,6 +34,6 @@ for k in range(30):
     #print('{}: little {}, big {}, raw {}'.\
     #      format(name, ll, bb, rr))
     
-    time.sleep(0.5)
+    time.sleep(0.2)
 
     
