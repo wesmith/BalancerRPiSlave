@@ -110,7 +110,7 @@ class LSM6:
     return lit_end, big_end, raw_s, raw_u
 
   def getRaw(self, name):
-    return read_raw(self.choice[name], 6)
+    return self.read_raw(self.choice[name], 6)
       
 '''
   def leds(self, red, yellow, green):
