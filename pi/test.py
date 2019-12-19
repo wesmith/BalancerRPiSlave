@@ -22,7 +22,7 @@ for k in range(30):
     ax = int(accl[0]) + (int(accl[1]) << 8)
     ay = int(accl[2]) + (int(accl[3]) << 8)
     az = int(accl[4]) + (int(accl[5]) << 8)
-    print('x accel: {}, y accel: {}, z accel {}'.format(ax, ay, az)
+    print('x accel: {}, y accel: {}, z accel {}'.format(ax, ay, az))
 
                   
     '''
