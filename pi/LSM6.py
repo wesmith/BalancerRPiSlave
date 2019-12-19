@@ -142,9 +142,9 @@ class LSM6:
     raw_u   = self.read_unpack(self.choice[name], 6, '6B')   # 'B' is unsigned char    
     return lit_end, big_end, raw_s, raw_u
 
-  def getRaw(self, name): 
+  def getRaw(self, name, length): 
     #return self.read_raw(self.choice[name], 6) # this block reading also not working
-    return self.assembleData(self.choice[name], 6)
+    return self.assembleData(self.choice[name], length)
   
       
 '''
