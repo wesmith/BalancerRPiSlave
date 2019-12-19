@@ -21,6 +21,7 @@ class LSM6:
     self.CTRL3_C     = 0X12  # common        buffer
     self.OUTX_L_G    = 0x22  # gyro          array start (low then high byte, each for x,y,z)
     self.OUTX_L_XL   = 0x28  # accelerometer array start (low then high byte, each for x,y,z)
+    self.choice      = {'accel': self.OUTX_L_XL, 'gyro': self.OUTX_L_G}
     
     txt = 'LSM6: address {}, IDreg {}, ID {}'.\
             format(hex(self.address), hex(self.WHO_AM_I), hex(self.DS33_WHO_ID))
@@ -36,6 +37,12 @@ class LSM6:
     byte_list = [self.bus.read_byte(self.address) for _ in range(size)]
     return struct.unpack(format, bytes(byte_list))
 
+  def read_raw(self, address, size):
+    # WS wrote this for debugging purposes: avoids struct
+    self.bus.write_byte(self.address, address)
+    time.sleep(0.0001)
+    return [self.bus.read_byte(self.address) for _ in range(size)]
+    
   def write_pack(self, address, format, *data):
     data_array = list(struct.pack(format, *data))
     self.bus.write_i2c_block_data(self.address, address, data_array)
@@ -95,15 +102,15 @@ class LSM6:
       print(txt)
           
   def getData(self, name):
-    dd = {'accel': self.OUTX_L_XL, 'gyro': self.OUTX_L_G}
-    
     # 'h' is short integer (2 bytes each): must verify endian-order is correct
-    lit_end = self.read_unpack(dd[name], 6, '<3h')  # get using little-endian
-    big_end = self.read_unpack(dd[name], 6, '>3h')  # get using big-endian
-    raw_s   = self.read_unpack(dd[name], 6, '6b')   # 'b' is signed char
-    raw_u   = self.read_unpack(dd[name], 6, '6B')   # 'B' is unsigned char    
+    lit_end = self.read_unpack(self.choice[name], 6, '<3h')  # get using little-endian
+    big_end = self.read_unpack(self.choice[name], 6, '>3h')  # get using big-endian
+    raw_s   = self.read_unpack(self.choice[name], 6, '6b')   # 'b' is signed char
+    raw_u   = self.read_unpack(self.choice[name], 6, '6B')   # 'B' is unsigned char    
     return lit_end, big_end, raw_s, raw_u
-    
+
+  def getRaw(self, name):
+    return read_raw(self.choice[name], 6)
       
 '''
   def leds(self, red, yellow, green):
