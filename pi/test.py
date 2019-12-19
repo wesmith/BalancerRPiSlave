@@ -19,11 +19,17 @@ while(True):
     gyro = lsm6.getRaw('gyro',  6)
     #print('{}: {}   {}: {}'.format('accel', accl, 'gyro', gyro))
 
+    ''' # this works, but not producing signed results
     ax = int(accl[0]) + (int(accl[1]) << 8)
     ay = int(accl[2]) + (int(accl[3]) << 8)
     az = int(accl[4]) + (int(accl[5]) << 8)
     print('x accel: {}, y accel: {}, z accel {}'.format(ax, ay, az))
+    '''
 
+    ax = accl[0] + (accl[1] << 8)
+    ay = accl[2] + (accl[3] << 8)
+    az = accl[4] + (accl[5] << 8)
+    print('x accel: {}, y accel: {}, z accel {}'.format(ax, ay, az))
                   
     '''
     for k in ['accel']:
@@ -34,6 +40,6 @@ while(True):
     #print('{}: little {}, big {}, raw {}'.\
     #      format(name, ll, bb, rr))
     
-    time.sleep(0.2)
+    time.sleep(0.1)
 
     
