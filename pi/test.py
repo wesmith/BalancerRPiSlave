@@ -26,6 +26,7 @@ while(True):
     print('x accel: {}, y accel: {}, z accel {}'.format(ax, ay, az))
     '''
 
+    # this works, but not producing signed results
     ax = accl[0] + (accl[1] << 8)
     ay = accl[2] + (accl[3] << 8)
     az = accl[4] + (accl[5] << 8)
