@@ -32,7 +32,7 @@ while(True):
     ay = np.short(accl[2] + (accl[3] << 8))
     az = np.short(accl[4] + (accl[5] << 8))
     mag = np.sqrt(ax**2 + ay**2 + az**2)
-    print('accel x: {}, y: {}, z: {}'.format(ax/mag, ay/mag, az/mag))
+    print('accel x: {:+5.3f}, y: {:+5.3f}, z: {:+5.3f}'.format(ax/mag, ay/mag, az/mag))
                   
     '''
     for k in ['accel']:
