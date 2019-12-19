@@ -12,8 +12,8 @@ lsm6 = ls.LSM6()
 lsm6.verifyWrite()
 time.sleep(1)
 
-#for k in range(30):
-while(True):
+for k in range(30):
+#while(True):
 
     accl = lsm6.getRaw('accel')
     gyro = lsm6.getRaw('gyro')
