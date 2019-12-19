@@ -118,7 +118,7 @@ class LSM6:
           format([hex(out[0]), hex(out[1]), hex(out[2])])
     print(txt)
     # fourth test
-    out = self.assembleData(self.CTRL1_XL, 3)
+    out = self.assembleData(self.CTRL1_XL, 3) # this worked: bytes one at a time
     txt = 'fourth  test: values from 3 registers in one read: {}'.\
           format([hex(out[0]), hex(out[1]), hex(out[2])])
     print(txt)
@@ -126,9 +126,12 @@ class LSM6:
   def assembleData(self, reg, length):
     # read bytes one-at-a-time: block reading apparently not working
     out = []
+    '''
     for k in range(length):
       out.append(self.read_raw(reg + k, 1)[0])
     return out
+    '''
+    return [self.read_raw(reg + k, 1)[0] for k in range(length)]
                  
   def getData(self, name):
     # 'h' is short integer (2 bytes each): must verify endian-order is correct
@@ -139,8 +142,10 @@ class LSM6:
     raw_u   = self.read_unpack(self.choice[name], 6, '6B')   # 'B' is unsigned char    
     return lit_end, big_end, raw_s, raw_u
 
-  def getRaw(self, name): # this block reading also not working
-    return self.read_raw(self.choice[name], 6)
+  def getRaw(self, name): 
+    #return self.read_raw(self.choice[name], 6) # this block reading also not working
+    return self.assembleData(self.choice[name], 6)
+  
       
 '''
   def leds(self, red, yellow, green):
