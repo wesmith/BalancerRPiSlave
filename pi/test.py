@@ -17,7 +17,7 @@ while(True):
 
     accl = lsm6.getRaw('accel')
     gyro = lsm6.getRaw('gyro')
-    print('{}: {}   {}: {}'.format('accel', accl, 'gyro', gyro)
+    print('{}: {}   {}: {}'.format('accel', accl, 'gyro', gyro))
                   
     '''
     for k in ['accel']:
