@@ -31,7 +31,8 @@ while(True):
     ax = np.short(accl[0] + (accl[1] << 8))
     ay = np.short(accl[2] + (accl[3] << 8))
     az = np.short(accl[4] + (accl[5] << 8))
-    print('x accel: {}, y accel: {}, z accel {}'.format(ax, ay, az))
+    mag = np.sqrt(ax**2 + ay**2 + az**2)
+    print('accel x: {}, y: {}, z: {}'.format(ax/mag, ay/mag, az/mag))
                   
     '''
     for k in ['accel']:
@@ -42,6 +43,6 @@ while(True):
     #print('{}: little {}, big {}, raw {}'.\
     #      format(name, ll, bb, rr))
     
-    time.sleep(0.1)
+    time.sleep(0.01)
 
     
