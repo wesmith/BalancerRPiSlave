@@ -123,11 +123,11 @@ class LSM6:
           format([hex(out[0]), hex(out[1]), hex(out[2])])
     print(txt)
     
-  def assembleData(self, name, length):
+  def assembleData(self, reg, length):
     # read bytes one-at-a-time: block reading apparently not working
     out = []
     for k in range(length):
-      out.append(self.read_raw(self.choice[name] + k, 1)[0])
+      out.append(self.read_raw(reg + k, 1)[0])
     return out
                  
   def getData(self, name):
