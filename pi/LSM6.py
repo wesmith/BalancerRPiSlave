@@ -16,9 +16,9 @@ class LSM6:
     self.address     = 0x6b  # LSM6DS33 SAO_HIGH I2C address
     self.WHO_AM_I    = 0x0f  # register containing device ID
     self.DS33_WHO_ID = 0x69  # device ID
-    self.CTRL1_XL    = 0X10  # accelerometer buffer
-    self.CTRL2_G     = 0X11  # gyro          buffer
-    self.CTRL3_C     = 0X12  # common        buffer
+    self.CTRL1_XL    = 0x10  # accelerometer buffer
+    self.CTRL2_G     = 0x11  # gyro          buffer
+    self.CTRL3_C     = 0x12  # common        buffer
     self.OUTX_L_G    = 0x22  # gyro          array start (low then high byte, each for x,y,z)
     self.OUTX_L_XL   = 0x28  # accelerometer array start (low then high byte, each for x,y,z)
     self.choice      = {'accel': self.OUTX_L_XL, 'gyro': self.OUTX_L_G}
@@ -108,8 +108,8 @@ class LSM6:
     print(txt)
     # test multiple read with read_i2c_block_data(): doesn't read consec regs with LSM6
     # it reproduces first element
-    # made value CTRL2 to see if second value gets repeated
-    out = self.bus.read_i2c_block_data(self.address, self.CTRL2_G, 3)
+    # made value CTRL3 to see if value gets repeated: it does
+    out = self.bus.read_i2c_block_data(self.address, self.CTRL3_C, 3)
     txt = 'third  test: values from 3 registers in one read: {}'.\
           format([hex(out[0]), hex(out[1]), hex(out[2])])
     print(txt)
