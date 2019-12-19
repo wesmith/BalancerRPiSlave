@@ -4,6 +4,9 @@
 WSmith copied this file from Pololu's a_star.py, to create a class to
 read the LSM6DS33 accelerometer/gyro chip on the Pololu Balboa board
 from the RPi.
+
+NOTE: unable to read block data on RPi as of 12/19/19 with existing code. Will do
+      a sledgehammer and read a byte at a time. 
 '''      
 
 import smbus
@@ -22,7 +25,7 @@ class LSM6:
     self.OUTX_L_G    = 0x22  # gyro          array start (low then high byte, each for x,y,z)
     self.OUTX_L_XL   = 0x28  # accelerometer array start (low then high byte, each for x,y,z)
     self.choice      = {'accel': self.OUTX_L_XL, 'gyro': self.OUTX_L_G}
-    self.sleep       = 0.001 # WS made a variable: time to sleep in sec between write/read
+    self.sleep       = 0.0001 # WS made a variable: time to sleep in sec between write/read
                              # (this was 0.0001 in Pololu code: 100 us)
     
     txt = 'LSM6: address {}, IDreg {}, ID {}'.\
@@ -38,6 +41,7 @@ class LSM6:
 
   def read_raw(self, address, size):
     # WS wrote this for debugging purposes: avoids struct
+    # note: block reading apparently not working
     self.bus.write_byte(self.address, address)
     time.sleep(self.sleep)
     return [self.bus.read_byte(self.address) for _ in range(size)]
@@ -108,21 +112,34 @@ class LSM6:
     # test multiple read with read_i2c_block_data(): doesn't read consec regs with LSM6
     # it reproduces first element
     # made value CTRL3 to see if value gets repeated: it does: register not incrementing
+    # ie, block reading not working: see 12/19/19 enotes: issues with RPI and smbus?
     out = self.bus.read_i2c_block_data(self.address, self.CTRL3_C, 3)
     txt = 'third  test: values from 3 registers in one read: {}'.\
           format([hex(out[0]), hex(out[1]), hex(out[2])])
     print(txt)
+    # fourth test
+    out = self.assemble_data(self.CTRL1_XL, 3)
+    txt = 'fourth  test: values from 3 registers in one read: {}'.\
+          format([hex(out[0]), hex(out[1]), hex(out[2])])
+    print(txt)
     
-          
+  def assembleData(self, name, length):
+    # read bytes one-at-a-time: block reading apparently not working
+    out = []
+    for k in range(length):
+      out.append(self.read_raw(self.choice[name] + k, 1)[0])
+    return out
+                 
   def getData(self, name):
     # 'h' is short integer (2 bytes each): must verify endian-order is correct
+    # this appears to produce random values: block reading not working?
     lit_end = self.read_unpack(self.choice[name], 6, '<3h')  # get using little-endian
     big_end = self.read_unpack(self.choice[name], 6, '>3h')  # get using big-endian
     raw_s   = self.read_unpack(self.choice[name], 6, '6b')   # 'b' is signed char
     raw_u   = self.read_unpack(self.choice[name], 6, '6B')   # 'B' is unsigned char    
     return lit_end, big_end, raw_s, raw_u
 
-  def getRaw(self, name):
+  def getRaw(self, name): # this block reading also not working
     return self.read_raw(self.choice[name], 6)
       
 '''
