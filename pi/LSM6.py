@@ -22,6 +22,8 @@ class LSM6:
     self.OUTX_L_G    = 0x22  # gyro          array start (low then high byte, each for x,y,z)
     self.OUTX_L_XL   = 0x28  # accelerometer array start (low then high byte, each for x,y,z)
     self.choice      = {'accel': self.OUTX_L_XL, 'gyro': self.OUTX_L_G}
+    self.sleep       = 0.001 # WS made a variable: time to sleep in sec between write/read
+                             # (this was 0.0001 in Pololu code: 100 us)
     
     txt = 'LSM6: address {}, IDreg {}, ID {}'.\
             format(hex(self.address), hex(self.WHO_AM_I), hex(self.DS33_WHO_ID))
@@ -29,24 +31,21 @@ class LSM6:
     self.setup()
 
   def read_unpack(self, address, size, format):
-    # A delay of 0.0001 (100 us) after each write is enough to account
-    # for the worst-case situation.
-
     self.bus.write_byte(self.address, address)
-    time.sleep(0.0001)
+    time.sleep(self.sleep)
     byte_list = [self.bus.read_byte(self.address) for _ in range(size)]
     return struct.unpack(format, bytes(byte_list))
 
   def read_raw(self, address, size):
     # WS wrote this for debugging purposes: avoids struct
     self.bus.write_byte(self.address, address)
-    time.sleep(0.0001)
+    time.sleep(self.sleep)
     return [self.bus.read_byte(self.address) for _ in range(size)]
     
   def write_pack(self, address, format, *data):
     data_array = list(struct.pack(format, *data))
     self.bus.write_i2c_block_data(self.address, address, data_array)
-    time.sleep(0.0001)
+    time.sleep(self.sleep)
 
   def setup(self):
     val = self.read_unpack(self.WHO_AM_I, 1, 'B')  # 'B': unsigned char: see python struct info
@@ -108,7 +107,7 @@ class LSM6:
     print(txt)
     # test multiple read with read_i2c_block_data(): doesn't read consec regs with LSM6
     # it reproduces first element
-    # made value CTRL3 to see if value gets repeated: it does
+    # made value CTRL3 to see if value gets repeated: it does: register not incrementing
     out = self.bus.read_i2c_block_data(self.address, self.CTRL3_C, 3)
     txt = 'third  test: values from 3 registers in one read: {}'.\
           format([hex(out[0]), hex(out[1]), hex(out[2])])
