@@ -109,7 +109,7 @@ class LSM6:
     # test multiple read with read_i2c_block_data(): doesn't read consec regs with LSM6
     # it reproduces first element
     # made value CTRL2 to see if second value gets repeated
-    out = self.bus.read_i2c_block_data(self.address, self.CTRL2_XL, 3)
+    out = self.bus.read_i2c_block_data(self.address, self.CTRL2_G, 3)
     txt = 'third  test: values from 3 registers in one read: {}'.\
           format([hex(out[0]), hex(out[1]), hex(out[2])])
     print(txt)
