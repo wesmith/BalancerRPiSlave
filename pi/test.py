@@ -5,6 +5,7 @@
 # test LSM6 class
 
 import LSM6 as ls
+import numpy as np
 import time
 
 lsm6 = ls.LSM6()
@@ -27,9 +28,9 @@ while(True):
     '''
 
     # this works, but not producing signed results
-    ax = accl[0] + (accl[1] << 8)
-    ay = accl[2] + (accl[3] << 8)
-    az = accl[4] + (accl[5] << 8)
+    ax = np.short(accl[0] + (accl[1] << 8))
+    ay = np.short(accl[2] + (accl[3] << 8))
+    az = np.short(accl[4] + (accl[5] << 8))
     print('x accel: {}, y accel: {}, z accel {}'.format(ax, ay, az))
                   
     '''
