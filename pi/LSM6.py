@@ -102,7 +102,8 @@ class LSM6:
       print(txt)
     # test multiple read: consecutive registers
     out = self.read_unpack(self.CTRL1_XL, 3, 'BBB')
-    txt = 'second test: values from 3 registers in one read: {}'.format(hex(out))
+    txt = 'second test: values from 3 registers in one read: {}'.\
+          format(hex(out[0]), hex(out[1]), hex(out[2]))
     print(txt)
           
   def getData(self, name):
