@@ -100,11 +100,17 @@ class LSM6:
       txt = 'register {} should be {}, it is {}'.\
             format(hex(j), hex(k), hex(ctrl[0]))
       print(txt)
-    # test multiple read: consecutive registers
+    # test multiple read with read_unpack(): doesn't appear to work with LSM6
     out = self.read_unpack(self.CTRL1_XL, 3, 'BBB')
     txt = 'second test: values from 3 registers in one read: {}'.\
           format([hex(out[0]), hex(out[1]), hex(out[2])])
     print(txt)
+    # test multiple read with read_i2c_block_data()
+    out = self.bus.read_i2c_block_data(self.address, self.CTRL1_XL, 3)
+    txt = 'third test: values from 3 registers in one read: {}'.\
+          format([hex(out[0]), hex(out[1]), hex(out[2])])
+    print(txt)
+    
           
   def getData(self, name):
     # 'h' is short integer (2 bytes each): must verify endian-order is correct
