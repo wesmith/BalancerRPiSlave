@@ -109,7 +109,7 @@ class LSM6:
     for j, k in zip(regs, vals):
       txt = 'register {} should be {}'.format(hex(j), hex(k))
       print(txt)
-    out = self.assembleData(self.CTRL1_XL, 3) 
+    out = self.read_multiple_bytes(self.CTRL1_XL, 3)
     txt = 'test read: values from 3 registers in one read: {}'.\
           format([hex(out[0]), hex(out[1]), hex(out[2])])
     print(txt)
@@ -118,6 +118,6 @@ class LSM6:
     #return [self.read_raw(reg + k, 1)[0] for k in range(length)]
     return [self.read_one_byte(reg + k) for k in range(length)]
   
-  def read_raw_bytes(self, name, length): 
+  def read_device(self, name, length): 
     return self.read_multiple_bytes(self.choice[name], length)
   
