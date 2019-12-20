@@ -44,6 +44,7 @@ class LSM6:
     # see datasheet p. 48
     self.calibrate   = 100          # number of iterations for gyro calibration
     self.gyro_offset = np.zeros(3)  # vector for gyro calibration
+    self.gyro_scale  = 29           # Pololu says this scales from 1000 deg/s to deg/s: why 29?
 
     # common settings
     self.CTRL3_C       = 0x12  # buffer address
@@ -70,16 +71,19 @@ class LSM6:
   def write_one_byte(self, register, value):
     self.bus.write_byte_data(self.address, register, value)
     time.sleep(self.sleep)
-  
+
+    
   def read_one_byte(self, register):
     self.bus.write_byte(self.address, register)
     time.sleep(self.sleep)
     return self.bus.read_byte(self.address)
+  
     
   def read_multiple_bytes(self, register, length):
     # work-around for block read
     return [self.read_one_byte(register + k) for k in range(length)]
-  
+
+
   def read_device(self, dev_name):
     raw  = self.read_multiple_bytes(self.choice[dev_name], self.length)
     indx = np.arange(0, self.length, 2)
@@ -89,7 +93,8 @@ class LSM6:
       mag = np.sqrt((vals*vals).sum())
       return vals/mag # normalized
     else:
-      return (vals - self.gyro_offset) # remove offset
+      return (vals - self.gyro_offset) / self.gyro_scale # remove offset, scale => Pololu 'angleRate'
+
 
   def setup(self):
     val = self.read_one_byte(self.WHO_AM_I)
@@ -128,6 +133,7 @@ class LSM6:
             format([hex(out[0]), hex(out[1]), hex(out[2])])
       print(txt)
 
+      
   def calibrate_gyro(self):
     print('Calibrating gyro')
     self.gyro_offset = \
