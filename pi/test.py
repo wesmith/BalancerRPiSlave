@@ -26,11 +26,11 @@ while(True):
     print('accel x: {:+5.3f}, y: {:+5.3f}, z: {:+5.3f}'.format(ax/mag, ay/mag, az/mag))
     '''
     
-    vals = np.array([np.short(accl[j] + (accl[j+1] << 8)) for j in [0,2,4]])
-    #mag  = np.sqrt((vals*vals).sum())
-    #vals = vals/mag
-    print('accel x: {:+10d}, y: {:+10d}, z: {:+10d}'.format(vals[0], vals[1], vals[2]))
-    #print('accel x: {:+5.3f}, y: {:+5.3f}, z: {:+5.3f}'.format(vals[0], vals[1], vals[2]))    
+    vals = np.float(np.array([np.short(accl[j] + (accl[j+1] << 8)) for j in [0,2,4]]))
+    mag  = np.sqrt((vals*vals).sum())
+    vals = vals/mag
+    #print('accel x: {:+10d}, y: {:+10d}, z: {:+10d}'.format(vals[0], vals[1], vals[2]))
+    print('accel x: {:+5.3f}, y: {:+5.3f}, z: {:+5.3f}'.format(vals[0], vals[1], vals[2]))    
                   
     time.sleep(0.01)
 
