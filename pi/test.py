@@ -15,8 +15,8 @@ time.sleep(1)
 #for k in range(100):
 while(True):
 
-    accl = lsm6.read_device('accel', 6)
-    gyro = lsm6.read_device('gyro',  6)
+    accl = lsm6.read_device('accel')
+    gyro = lsm6.read_device('gyro')
 
     '''
     vals = np.array([np.short(accl[j] + (accl[j+1] << 8)) for j in [0,2,4]], dtype='float')

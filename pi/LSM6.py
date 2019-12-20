@@ -22,6 +22,7 @@ class LSM6:
     self.DS33_WHO_ID = 0x69   # device ID
     self.sleep       = 0.0001 # WS made this a param: time to sleep in sec between write/read
                               # (this was 0.0001 in Pololu code: 100 us)
+    self.length      = 6      # length in bytes of data vector (low then high byte, each for x,y,z)
 
     # accelerometer settings
     self.OUTX_L_XL      = 0x28  # data array start (low then high byte, each for x,y,z)
@@ -77,9 +78,9 @@ class LSM6:
     # work-around for block read
     return [self.read_one_byte(register + k) for k in range(length)]
   
-  def read_device(self, dev_name, length):
-    raw  = self.read_multiple_bytes(self.choice[dev_name], length)
-    indx = np.arange(0, length, 2)
+  def read_device(self, dev_name):
+    raw  = self.read_multiple_bytes(self.choice[dev_name], self.length)
+    indx = np.arange(0, self.length, 2)
     vals = np.array([np.short(raw[j] + (raw[j+1] << 8)) for j in indx], dtype='float')
     # allow for different post-processing of accel or gyro: they are the same at present
     if dev_name == 'accel':
