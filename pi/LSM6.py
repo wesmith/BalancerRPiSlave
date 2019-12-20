@@ -33,34 +33,38 @@ class LSM6:
     print(txt)
     self.setup()
 
-  
+  '''
   def read_unpack(self, address, size, format):
     self.bus.write_byte(self.address, address)
     time.sleep(self.sleep)
     byte_list = [self.bus.read_byte(self.address) for _ in range(size)]
     return struct.unpack(format, bytes(byte_list))
+  '''
   
   def write_pack(self, address, format, *data):
     data_array = list(struct.pack(format, *data))
     self.bus.write_i2c_block_data(self.address, address, data_array)
     time.sleep(self.sleep)
 
-  '''
-  def read_raw(self, address, size):
-    self.bus.write_byte(self.address, address)
-    time.sleep(self.sleep)
-    return [self.bus.read_byte(self.address) for _ in range(size)]
-  '''
+    
   def read_one_byte(self, address):
     self.bus.write_byte(self.address, address)
     time.sleep(self.sleep)
     return self.bus.read_byte(self.address)
     
-    
-  def setup(self):
-    val = self.read_unpack(self.WHO_AM_I, 1, 'B')  # 'B': unsigned char: see python struct info
+  def read_multiple_bytes(self, reg, length):
+    return [self.read_one_byte(reg + k) for k in range(length)]
+  
+  def read_device(self, name, length): 
+    return self.read_multiple_bytes(self.choice[name], length)
 
-    if (val[0] == self.DS33_WHO_ID):
+  
+  def setup(self):
+    #val = self.read_unpack(self.WHO_AM_I, 1, 'B')  # 'B': unsigned char: see python struct info
+    val = self.read_one_byte(self.WHO_AM_I)
+    
+    #if (val[0] == self.DS33_WHO_ID):
+    if (val == self.DS33_WHO_ID):
       print ('LSM6 identified successfully')
     else:
       txt = 'LSM6 error: tried address {}, IDreg {}, ID should be {}, found {}'.\
@@ -113,11 +117,5 @@ class LSM6:
     txt = 'test read: values from 3 registers in one read: {}'.\
           format([hex(out[0]), hex(out[1]), hex(out[2])])
     print(txt)
-    
-  def read_multiple_bytes(self, reg, length):
-    #return [self.read_raw(reg + k, 1)[0] for k in range(length)]
-    return [self.read_one_byte(reg + k) for k in range(length)]
-  
-  def read_device(self, name, length): 
-    return self.read_multiple_bytes(self.choice[name], length)
+
   
