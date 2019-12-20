@@ -16,13 +16,11 @@ class LSM6:
   
   def __init__(self):
     self.bus         = smbus.SMBus(1)
-    self.address     = 0x6b  # LSM6DS33 SAO_HIGH I2C address
-    self.WHO_AM_I    = 0x0f  # register containing device ID
-    self.DS33_WHO_ID = 0x69  # device ID
-
+    self.address     = 0x6b   # LSM6DS33 SAO_HIGH I2C address
+    self.WHO_AM_I    = 0x0f   # register containing device ID
+    self.DS33_WHO_ID = 0x69   # device ID
     self.sleep       = 0.0001 # WS made this a param: time to sleep in sec between write/read
                               # (this was 0.0001 in Pololu code: 100 us)
-    self.choice      = {'accel': self.OUTX_L_XL, 'gyro': self.OUTX_L_G}
 
     # accelerometer settings
     self.OUTX_L_XL      = 0x28  # data array start (low then high byte, each for x,y,z)
@@ -56,6 +54,8 @@ class LSM6:
     # 0 LSB at lower address when 0
     # 0 SW reset, 0 is normal mode
     # see datasheet p. 49
+
+    self.choice = {'accel': self.OUTX_L_XL, 'gyro': self.OUTX_L_G}
 
     txt = 'initializing LSM6: I2C address {}, ID register {}, ID value {}'.\
             format(hex(self.address), hex(self.WHO_AM_I), hex(self.DS33_WHO_ID))
