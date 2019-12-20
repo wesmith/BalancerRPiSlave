@@ -80,7 +80,7 @@ class LSM6:
   def read_device(self, dev_name, length):
     raw  = self.read_multiple_bytes(self.choice[dev_name], length)
     indx = np.arange(0, length, 2)
-    vals = np.array([np.short(accl[j] + (accl[j+1] << 8)) for j in indx], dtype='float')
+    vals = np.array([np.short(raw[j] + (raw[j+1] << 8)) for j in indx], dtype='float')
     # allow for different post-processing of accel or gyro: they are the same at present
     if dev_name == 'accel':
       mag = np.sqrt((vals*vals).sum())
