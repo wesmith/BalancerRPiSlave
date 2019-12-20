@@ -99,8 +99,9 @@ class LSM6:
     # verify that registers have been set correctly
     regs = [self.CTRL1_XL, self.CTRL2_G, self.CTRL3_C]
     vals = [0x80, 0x58, 0x40]
-    txt = 'register {} should be {}'.format(hex(j), hex(k))
-    print(txt)
+    for j, k in zip(regs, vals):
+      txt = 'register {} should be {}'.format(hex(j), hex(k))
+      print(txt)
 
     '''
     for j,k in zip(regs, vals):
