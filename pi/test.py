@@ -18,7 +18,7 @@ while(True):
     accl = lsm6.read_device('accel')
     gyro = lsm6.read_device('gyro')
 
-    txt = 'accel x,y,z: {:+5.3f}  {:+5.3f}  {:+5.3f}   gyro x,y,z: {:+5.3f}  {:+5.3f}  {:+5.3f}'.\
+    txt = 'accel x,y,z: {:+5.3f}  {:+5.3f}  {:+5.3f}   gyro x,y,z: {:+6.0f}  {:+6.0f}  {:+6.0f}'.\
           format(*np.hstack([accl, gyro]))
     print(txt)
 
