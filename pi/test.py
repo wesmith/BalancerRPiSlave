@@ -18,13 +18,8 @@ while(True):
     accl = lsm6.read_device('accel')
     gyro = lsm6.read_device('gyro')
 
-    '''
-    vals = np.array([np.short(accl[j] + (accl[j+1] << 8)) for j in [0,2,4]], dtype='float')
-    mag  = np.sqrt((vals*vals).sum())
-    vals = vals/mag
-    '''
-    #print('accel x: {:+5.3f}, y: {:+5.3f}, z: {:+5.3f}'.format(accl[0], accl[1], accl[2]))
-    print('accel x: {:+5.3f}, y: {:+5.3f}, z: {:+5.3f}'.format(*accl))    
+    print('accel x,y,z: {:+5.3f}  {:+5.3f}  {:+5.3f}   gyro x,y,z: {:+5.3f}  {:+5.3f}  {:+5.3f}'.\
+          format(*accl, *gyro))    
 
     time.sleep(0.01)
 
