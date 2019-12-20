@@ -1,44 +1,67 @@
-# Copyright Pololu Corporation.  For more information, see https://www.pololu.com/
-
 '''
-WSmith copied this file from Pololu's a_star.py, to create a class to
-read the LSM6DS33 accelerometer/gyro chip on the Pololu Balboa board
-from the RPi.
+WSmith 12/19/19
 
-NOTE: unable to read block data on the RPi 3 as of 12/19/19 with smbus:
-      will read a byte at a time. 
+Read the LSM6DS33 accelerometer/gyro chip on the Pololu Balboa board
+from the RPi. All LSM6 settings are derived from Pololu Balancer.ino, 
+Balance.cpp, and LSM6.cpp
+
+NOTE: Unable to read block data on the RPi 3 with smbus as of 12/19/19:
+      will read a byte at a time instead. 
 '''      
 
 import smbus
-#import struct
 import time
 
 class LSM6:
+  
   def __init__(self):
     self.bus         = smbus.SMBus(1)
     self.address     = 0x6b  # LSM6DS33 SAO_HIGH I2C address
     self.WHO_AM_I    = 0x0f  # register containing device ID
     self.DS33_WHO_ID = 0x69  # device ID
-    self.CTRL1_XL    = 0x10  # accelerometer buffer
-    self.CTRL2_G     = 0x11  # gyro          buffer
-    self.CTRL3_C     = 0x12  # common        buffer
-    self.OUTX_L_G    = 0x22  # gyro          array start (low then high byte, each for x,y,z)
-    self.OUTX_L_XL   = 0x28  # accelerometer array start (low then high byte, each for x,y,z)
+
+    self.sleep       = 0.0001 # WS made this a param: time to sleep in sec between write/read
+                              # (this was 0.0001 in Pololu code: 100 us)
     self.choice      = {'accel': self.OUTX_L_XL, 'gyro': self.OUTX_L_G}
-    self.sleep       = 0.0001 # WS made a variable: time to sleep in sec between write/read
-                             # (this was 0.0001 in Pololu code: 100 us)
-    
+
+    # accelerometer settings
+    self.OUTX_L_XL      = 0x28  # data array start (low then high byte, each for x,y,z)
+    self.CTRL1_XL       = 0x10  # buffer address
+    self.CTRL1_XL_value = 0x80  # buffer value: 0x80 = 0b10000000 sets:
+    # 1.66 kHz high-performance mode (ODR = 1000, first 4 digits; ODR is Output Data Rate)
+    # +/-2 g full scale (FS_XL = 00: next 2 digits)
+    # 400 Hz anti-aliasing filter bandwidth selection (BW_XL = 00: last 2 digits)
+    # see LSM6DS33 datasheet p. 47
+
+    # gyro settings
+    self.OUTX_L_G      = 0x22  # data array start (low then high byte, each for x,y,z)    
+    self.CTRL2_G       = 0x11  # buffer address
+    self.CTRL2_G_value = 0x58  # buffer value: 0x58 = 0b01011000 sets:
+    # 208 Hz (normal mode, ODR = 0101, first 4 digits)
+    # 1000 deg per sec (FS_G = 10, next 2 digits)
+    # gyro full-scale at 125 dps: 0 = disabled (next 1 digit)
+    # last digit must be 0 in all cases
+    # see datasheet p. 48
+
+    # common settings
+    self.CTRL3_C       = 0x12  # buffer address
+    self.CTRL3_C_value = 0x04  # buffer value: 0x04 = 0b00000100 sets:
+    # 0 boot: 0 is normal mode
+    # 0 block data update: 0 is continuous update
+    # 0 interrupt activation level: 0 = interrupt output pads active high
+    # 0 push-pull mode: 0 (open-drain mode: 1)
+    # 0 SPI mode: 0 means 4-wire interface
+    # 1 register address automatically incremented during multiple-byte access: 1
+    #   NOTE: this is probably moot, since smbus block read not used here: RPI has block-read issues
+    # 0 LSB at lower address when 0
+    # 0 SW reset, 0 is normal mode
+    # see datasheet p. 49
+
     txt = 'initializing LSM6: I2C address {}, ID register {}, ID value {}'.\
             format(hex(self.address), hex(self.WHO_AM_I), hex(self.DS33_WHO_ID))
     print(txt)
     self.setup()
-
-  '''
-  def write_pack(self, address, format, *data):
-    data_array = list(struct.pack(format, *data))
-    self.bus.write_i2c_block_data(self.address, address, data_array)
-    time.sleep(self.sleep)
-  '''
+    
 
   def write_one_byte(self, register, value):
     self.bus.write_byte_data(self.address, register, value)
@@ -50,6 +73,7 @@ class LSM6:
     return self.bus.read_byte(self.address)
     
   def read_multiple_bytes(self, register, length):
+    # work-around for block read
     return [self.read_one_byte(register + k) for k in range(length)]
   
   def read_device(self, dev_name, length): 
@@ -60,58 +84,32 @@ class LSM6:
     if (val == self.DS33_WHO_ID):
       print ('LSM6 identified successfully')
     else:
-      txt = 'LSM6 error: tried address {}, IDreg {}, ID should be {}, found {}'.\
+      txt = 'LSM6 error: tried address {}, ID register {}, ID should be {}, found {}'.\
             format(hex(self.address), hex(self.WHO_AM_I),
                    hex(self.DS33_WHO_ID), hex(val[0]))
       print (txt)
       return
 
-    # all settings derived from Pololu Balancer.ino, Balance.cpp, and LSM6.cpp
-    
-    # accelerometer settings: 0b10000000 = 0x80 sets:
-    # 1.66 kHz high-performance mode (ODR = 1000, first 4 digits),
-    # (ODR means Output Data Rate)
-    # +/-2 g full scale (FS_XL = 00: next 2 digits)
-    # 400 Hz anti-aliasing filter bandwidth selection (BW_XL = 00: last 2 digits)
-    # see LSM6DS33 datasheet p. 47
-    self.write_one_byte(self.CTRL1_XL, 0x80)
-    #self.write_pack(self.CTRL1_XL, 'B', 0x80)
-
-    # gyro settings: 0b01011000 = 0x58
-    # 208 Hz (normal mode, ODR = 0101, first 4)
-    # 1000 deg per sec (FS_G = 10, next 2)
-    # gyro full-scale at 125 dps: 0 = disabled (next 1 digit)
-    # last digit must be 0 in all cases
-    # see datasheet p. 48
-    self.write_one_byte(self.CTRL2_G, 0x58)
-    #self.write_pack(self.CTRL2_G, 'B', 0x58)
-
-    # common settings: 0b00000100 = 0x04
-    # 0 boot: 0 is normal mode
-    # 0 block data update: 0 is continuous update
-    # 0 interrupt activation level: 0 = interrupt output pads active high
-    # 0 push-pull mode: 0 (open-drain mode: 1)
-    # 0 SPI mode: 0 means 4-wire interface
-    # 1 register address automatically incremented during multiple-byte access: 1
-    # 0 LSB at lower address when 0
-    # 0 SW reset, 0 is normal mode
-    # see datasheet p. 49
-    self.write_one_byte(self.CTRL3_C, 0x40)
-    #self.write_pack(self.CTRL3_C, 'B', 0x40)
+    self.write_one_byte(self.CTRL1_XL, self.CTRL1_XL_value)
+    self.write_one_byte(self.CTRL2_G,  self.CTRL2_G_value)
+    self.write_one_byte(self.CTRL3_C,  self.CTRL3_C_value)
 
     time.sleep(1) # wait a second for readings to stabilize
 
-    
-  def verifyWrite(self):
-    # verify that registers have been set correctly
-    regs = [self.CTRL1_XL, self.CTRL2_G, self.CTRL3_C]
-    vals = [0x80, 0x58, 0x40]
-    for j, k in zip(regs, vals):
-      txt = 'register {} should be {}'.format(hex(j), hex(k))
-      print(txt)
-    out = self.read_multiple_bytes(self.CTRL1_XL, 3)
-    txt = 'test read: values from 3 registers in one read: {}'.\
-          format([hex(out[0]), hex(out[1]), hex(out[2])])
-    print(txt)
+    self.verify_write() # verify that registers have been set correctly
 
-  
+    
+  def verify_write(self):
+    regs = [self.CTRL1_XL,       self.CTRL2_G,       self.CTRL3_C]
+    vals = [self.CTRL1_XL_value, self.CTRL2_G_value, self.CTRL3_C_value]
+    out  = self.read_multiple_bytes(self.CTRL1_XL, 3)
+    if out == vals:
+      print('Registers have been set correctly')
+    else:
+      for j, k in zip(regs, vals):
+        txt = 'register {} should be {}'.format(hex(j), hex(k))
+        print(txt)
+
+      txt = 'TEST READ FAILED: actual register values are: {}'.\
+            format([hex(out[0]), hex(out[1]), hex(out[2])])
+      print(txt)
