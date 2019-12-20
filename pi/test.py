@@ -16,8 +16,8 @@ time.sleep(1)
 #for k in range(100):
 while(True):
 
-    accl = lsm6.getRaw('accel', 6)
-    gyro = lsm6.getRaw('gyro',  6)
+    accl = lsm6.read_raw_bytes('accel', 6)
+    gyro = lsm6.read_raw_bytes('gyro',  6)
     #print('{}: {}   {}: {}'.format('accel', accl, 'gyro', gyro))
 
     ''' # this works, but not producing signed results

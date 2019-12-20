@@ -45,14 +45,21 @@ class LSM6:
     self.bus.write_i2c_block_data(self.address, address, data_array)
     time.sleep(self.sleep)
 
-
+  '''
   def read_raw(self, address, size):
     self.bus.write_byte(self.address, address)
     time.sleep(self.sleep)
     return [self.bus.read_byte(self.address) for _ in range(size)]
+  '''
+  def read_one_byte(self, address):
+    self.bus.write_byte(self.address, address)
+    time.sleep(self.sleep)
+    return self.bus.read_byte(self.address)
+    
     
   def setup(self):
     val = self.read_unpack(self.WHO_AM_I, 1, 'B')  # 'B': unsigned char: see python struct info
+
     if (val[0] == self.DS33_WHO_ID):
       print ('LSM6 identified successfully')
     else:
@@ -102,48 +109,15 @@ class LSM6:
     for j, k in zip(regs, vals):
       txt = 'register {} should be {}'.format(hex(j), hex(k))
       print(txt)
-
-    '''
-    for j,k in zip(regs, vals):
-      ctrl = self.read_unpack(j, 1, 'B')
-      txt = 'register {} should be {}, it is {}'.\
-            format(hex(j), hex(k), hex(ctrl[0]))
-      print(txt)
-    # test multiple read with read_unpack(): doesn't read consec regs with LSM6
-    # it reproduces first element
-    out = self.read_unpack(self.CTRL1_XL, 3, 'BBB')
-    txt = 'second test: values from 3 registers in one read: {}'.\
-          format([hex(out[0]), hex(out[1]), hex(out[2])])
-    print(txt)
-    # test multiple read with read_i2c_block_data(): doesn't read consec regs with LSM6
-    # it reproduces first element
-    # made value CTRL3 to see if value gets repeated: it does: register not incrementing
-    # ie, block reading not working: see 12/19/19 enotes: issues with RPI and smbus?
-    out = self.bus.read_i2c_block_data(self.address, self.CTRL3_C, 3)
-    txt = 'third  test: values from 3 registers in one read: {}'.\
-          format([hex(out[0]), hex(out[1]), hex(out[2])])
-    print(txt)
-    '''
     out = self.assembleData(self.CTRL1_XL, 3) 
     txt = 'test read: values from 3 registers in one read: {}'.\
           format([hex(out[0]), hex(out[1]), hex(out[2])])
     print(txt)
     
-  def assembleData(self, reg, length):
-    # read bytes one-at-a-time: block reading apparently not working
-    return [self.read_raw(reg + k, 1)[0] for k in range(length)]
+  def read_multiple_bytes(self, reg, length):
+    #return [self.read_raw(reg + k, 1)[0] for k in range(length)]
+    return [self.read_one_byte(reg + k) for k in range(length)]
   
-  '''
-  def getData(self, name):
-    # 'h' is short integer (2 bytes each): must verify endian-order is correct
-    # this appears to produce random values: block reading not working?
-    lit_end = self.read_unpack(self.choice[name], 6, '<3h')  # get using little-endian
-    big_end = self.read_unpack(self.choice[name], 6, '>3h')  # get using big-endian
-    raw_s   = self.read_unpack(self.choice[name], 6, '6b')   # 'b' is signed char
-    raw_u   = self.read_unpack(self.choice[name], 6, '6B')   # 'B' is unsigned char    
-    return lit_end, big_end, raw_s, raw_u
-  '''
-
-  def getRaw(self, name, length): # this works
-    return self.assembleData(self.choice[name], length)
+  def read_raw_bytes(self, name, length): 
+    return self.read_multiple_bytes(self.choice[name], length)
   
