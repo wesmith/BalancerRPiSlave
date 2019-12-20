@@ -42,6 +42,8 @@ class LSM6:
     # gyro full-scale at 125 dps: 0 = disabled (next 1 digit)
     # last digit must be 0 in all cases
     # see datasheet p. 48
+    self.calibrate   = 100   # number of iterations for gyro calibration
+    self.gyro_offset = None  # vector for gyro calibration
 
     # common settings
     self.CTRL3_C       = 0x12  # buffer address
@@ -85,9 +87,9 @@ class LSM6:
     # allow for different post-processing of accel or gyro values
     if dev_name == 'accel':
       mag = np.sqrt((vals*vals).sum())
-      return vals/mag
+      return vals/mag # normalized
     else:
-      return vals
+      return (vals - self.gyro_offset) # remove offset
 
   def setup(self):
     val = self.read_one_byte(self.WHO_AM_I)
@@ -108,6 +110,8 @@ class LSM6:
 
     self.verify_write() # verify that registers have been set correctly
 
+    self.calibrate_gyro()
+
     
   def verify_write(self):
     regs = [self.CTRL1_XL,       self.CTRL2_G,       self.CTRL3_C]
@@ -123,3 +127,8 @@ class LSM6:
       txt = 'TEST READ FAILED: actual register values are: {}'.\
             format([hex(out[0]), hex(out[1]), hex(out[2])])
       print(txt)
+
+  def calibrate_gyro(self):
+    print('Calibrating gyro')
+    self.gyro_offset = np.array([self.read_device('gyro') for _ in self.calibrate]).mean(axis=0)
+    print('calibration values: x,y,z: {:+6.0f}  {:+6.0f}  {:+6.0f}'.format(*self.gyro_offset))
