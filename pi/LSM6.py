@@ -28,29 +28,29 @@ class LSM6:
     self.sleep       = 0.0001 # WS made a variable: time to sleep in sec between write/read
                              # (this was 0.0001 in Pololu code: 100 us)
     
-    txt = 'LSM6: address {}, IDreg {}, ID {}'.\
+    txt = 'initializing LSM6: address {}, IDreg {}, ID {}'.\
             format(hex(self.address), hex(self.WHO_AM_I), hex(self.DS33_WHO_ID))
     print(txt)
     self.setup()
 
+  
   def read_unpack(self, address, size, format):
     self.bus.write_byte(self.address, address)
     time.sleep(self.sleep)
     byte_list = [self.bus.read_byte(self.address) for _ in range(size)]
     return struct.unpack(format, bytes(byte_list))
-
-  def read_raw(self, address, size):
-    # WS wrote this for debugging purposes: avoids struct
-    # note: block reading apparently not working
-    self.bus.write_byte(self.address, address)
-    time.sleep(self.sleep)
-    return [self.bus.read_byte(self.address) for _ in range(size)]
-    
+  
   def write_pack(self, address, format, *data):
     data_array = list(struct.pack(format, *data))
     self.bus.write_i2c_block_data(self.address, address, data_array)
     time.sleep(self.sleep)
 
+
+  def read_raw(self, address, size):
+    self.bus.write_byte(self.address, address)
+    time.sleep(self.sleep)
+    return [self.bus.read_byte(self.address) for _ in range(size)]
+    
   def setup(self):
     val = self.read_unpack(self.WHO_AM_I, 1, 'B')  # 'B': unsigned char: see python struct info
     if (val[0] == self.DS33_WHO_ID):
@@ -94,10 +94,15 @@ class LSM6:
 
     time.sleep(1) # wait a second for readings to stabilize
 
+    
   def verifyWrite(self):
     # verify that registers have been set correctly
     regs = [self.CTRL1_XL, self.CTRL2_G, self.CTRL3_C]
     vals = [0x80, 0x58, 0x40]
+    txt = 'register {} should be {}'.format(hex(j), hex(k))
+    print(txt)
+
+    '''
     for j,k in zip(regs, vals):
       ctrl = self.read_unpack(j, 1, 'B')
       txt = 'register {} should be {}, it is {}'.\
@@ -117,22 +122,17 @@ class LSM6:
     txt = 'third  test: values from 3 registers in one read: {}'.\
           format([hex(out[0]), hex(out[1]), hex(out[2])])
     print(txt)
-    # fourth test
-    out = self.assembleData(self.CTRL1_XL, 3) # this worked: bytes one at a time
-    txt = 'fourth  test: values from 3 registers in one read: {}'.\
+    '''
+    out = self.assembleData(self.CTRL1_XL, 3) 
+    txt = 'test read: values from 3 registers in one read: {}'.\
           format([hex(out[0]), hex(out[1]), hex(out[2])])
     print(txt)
     
   def assembleData(self, reg, length):
     # read bytes one-at-a-time: block reading apparently not working
-    out = []
-    '''
-    for k in range(length):
-      out.append(self.read_raw(reg + k, 1)[0])
-    return out
-    '''
     return [self.read_raw(reg + k, 1)[0] for k in range(length)]
-                 
+  
+  '''
   def getData(self, name):
     # 'h' is short integer (2 bytes each): must verify endian-order is correct
     # this appears to produce random values: block reading not working?
@@ -141,35 +141,8 @@ class LSM6:
     raw_s   = self.read_unpack(self.choice[name], 6, '6b')   # 'b' is signed char
     raw_u   = self.read_unpack(self.choice[name], 6, '6B')   # 'B' is unsigned char    
     return lit_end, big_end, raw_s, raw_u
+  '''
 
-  def getRaw(self, name, length): 
-    #return self.read_raw(self.choice[name], 6) # this block reading also not working
+  def getRaw(self, name, length): # this works
     return self.assembleData(self.choice[name], length)
   
-      
-'''
-  def leds(self, red, yellow, green):
-    self.write_pack(0, 'BBB', red, yellow, green)
-
-  def motors(self, left, right):
-    self.write_pack(6, 'hh', left, right)
-
-  def read_buttons(self):
-    return self.read_unpack(3, 3, "???")
-
-  def read_battery_millivolts(self):
-    return self.read_unpack(10, 2, "H")
-
-  def read_analog(self):
-    return self.read_unpack(12, 12, "HHHHHH")
-
-  def read_encoders(self):
-    return self.read_unpack(39, 4, 'hh')
-
-  def test_read8(self):
-    self.read_unpack(0, 8, 'cccccccc')
-
-  def test_write8(self):
-    self.bus.write_i2c_block_data(self.address, 0, [0,0,0,0,0,0,0,0])
-    time.sleep(0.0001)
-'''
