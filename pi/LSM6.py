@@ -42,8 +42,8 @@ class LSM6:
     # gyro full-scale at 125 dps: 0 = disabled (next 1 digit)
     # last digit must be 0 in all cases
     # see datasheet p. 48
-    self.calibrate   = 100   # number of iterations for gyro calibration
-    self.gyro_offset = None  # vector for gyro calibration
+    self.calibrate   = 100          # number of iterations for gyro calibration
+    self.gyro_offset = np.zeros(3)  # vector for gyro calibration
 
     # common settings
     self.CTRL3_C       = 0x12  # buffer address
