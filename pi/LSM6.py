@@ -84,7 +84,7 @@ class LSM6:
     return [self.read_one_byte(register + k) for k in range(length)]
 
 
-  def read_device(self, dev_name):
+  def read_device(self, dev_name, calibrate=False):
     raw  = self.read_multiple_bytes(self.choice[dev_name], self.length)
     indx = np.arange(0, self.length, 2)
     vals = np.array([np.short(raw[j] + (raw[j+1] << 8)) for j in indx], dtype='float')
@@ -93,7 +93,10 @@ class LSM6:
       mag = np.sqrt((vals*vals).sum())
       return vals/mag # normalized
     else:
-      return (vals - self.gyro_offset) / self.gyro_scale # remove offset, scale => Pololu 'angleRate'
+      if calibrate: # find gyro_offset using raw values
+        return vals
+      else:
+        return (vals - self.gyro_offset) / self.gyro_scale # remove offset, scale => Pololu 'angleRate'
 
 
   def setup(self):
@@ -137,5 +140,6 @@ class LSM6:
   def calibrate_gyro(self):
     print('Calibrating gyro')
     self.gyro_offset = \
-        np.array([self.read_device('gyro') for _ in range(self.calibrate)]).mean(axis=0)
+        np.array([self.read_device('gyro', calibrate=True) \
+                  for _ in range(self.calibrate)]).mean(axis=0)
     print('calibration values: x,y,z: {:+6.0f}  {:+6.0f}  {:+6.0f}'.format(*self.gyro_offset))
