@@ -130,5 +130,6 @@ class LSM6:
 
   def calibrate_gyro(self):
     print('Calibrating gyro')
-    self.gyro_offset = np.array([self.read_device('gyro') for _ in self.calibrate]).mean(axis=0)
+    self.gyro_offset = \
+        np.array([self.read_device('gyro') for _ in range(self.calibrate)]).mean(axis=0)
     print('calibration values: x,y,z: {:+6.0f}  {:+6.0f}  {:+6.0f}'.format(*self.gyro_offset))
