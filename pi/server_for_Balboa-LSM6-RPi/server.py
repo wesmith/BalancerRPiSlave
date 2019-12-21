@@ -13,10 +13,11 @@ app = Flask(__name__)
 app.debug = True
 
 from a_star import AStar
-import LSM6 as ls  # WS
+import LSM6  as ls  # WS
+import numpy as np  # WS
 
 a_star = AStar()
-lsm6   = ls.LSM6() # WS
+lsm6   = ls.LSM6()  # WS
 
 import json
 
@@ -31,7 +32,8 @@ def hello():
 @app.route("/status.json")
 def status():
     buttons = a_star.read_buttons()
-    analog = a_star.read_analog()
+    #analog = a_star.read_analog() # WS
+    analog = np.hstack([lsm6.read_device('accel'), lsm6.read_device('gyro')]) # WS
     battery_millivolts = a_star.read_battery_millivolts()
     encoders = a_star.read_encoders()
     data = {
