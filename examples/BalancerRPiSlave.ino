@@ -1,3 +1,4 @@
+// BalancerRPiSlave.ino
 // WSmith modified this from Balancer.ino and BalboaRPiSlaveDemo.ino, 
 // 12/16/19
 // Run the Balboa balancer as an I2C slave from an RPi I2C master.
