@@ -4,6 +4,8 @@
 *.pyc
 *.wav
 *.html
+# don't ignore index.html
+!index.html
 *.pdf
 *.ps
 *.odg#
