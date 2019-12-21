@@ -91,8 +91,8 @@ class LSM6:
     # allow for different post-processing of accel or gyro values
     if dev_name == 'accel':
       mag = np.sqrt((vals*vals).sum())
-      # normalized, scaled from 0 to 100, returned as signed int (0.5 for rounding)
-      return (0.5 + 100 * vals/mag).astype(int) 
+      # normalized, scaled from 0 to 1000, returned as signed int (0.5 for rounding)
+      return (0.5 + 1000 * vals/mag).astype(int) 
     else:
       if calibrate: # find gyro_offset using raw values
         return vals
