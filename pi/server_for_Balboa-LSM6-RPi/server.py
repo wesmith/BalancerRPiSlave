@@ -33,7 +33,7 @@ def hello():
 def status():
     buttons = a_star.read_buttons()
     #analog = a_star.read_analog() # WS
-    analog = np.hstack([lsm6.read_device('accel'), lsm6.read_device('gyro')]) # WS
+    analog = list(np.hstack([lsm6.read_device('accel'), lsm6.read_device('gyro')])) # WS
     battery_millivolts = a_star.read_battery_millivolts()
     encoders = a_star.read_encoders()
     data = {
