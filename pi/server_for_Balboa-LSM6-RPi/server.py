@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 
 # Copyright Pololu Corporation.  For more information, see https://www.pololu.com/
+
+# WESmith 12/21/19
+# this is the server for Balboa-LSM6-RPi: it will call the LSM6.py class
+
 from flask import Flask
 from flask import render_template
 from flask import redirect
@@ -9,7 +13,10 @@ app = Flask(__name__)
 app.debug = True
 
 from a_star import AStar
+import LSM6 as ls  # WS
+
 a_star = AStar()
+lsm6   = ls.LSM6() # WS
 
 import json
 
