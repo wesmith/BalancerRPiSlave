@@ -32,12 +32,13 @@ def hello():
 @app.route("/status.json")
 def status():
     buttons = a_star.read_buttons()
-    #analog = a_star.read_analog() # WS
+    analog = a_star.read_analog() # WS
     vals = np.hstack([lsm6.read_device('accel'), lsm6.read_device('gyro')]) # WS
-    analog = 10 # vals[0] # WS one number to start: this doesn't show on web page
+    print('lsm6 values {}'.format(*vals))
+    #analog = 10 # vals[0] # WS one number to start: this doesn't show on web page
     #battery_millivolts = a_star.read_battery_millivolts()
     #battery_millivolts = 99 # that worked
-    battery_millivolts = vals[0]
+    #battery_millivolts = vals[0]  # error: not serializable
     encoders = a_star.read_encoders()
     data = {
         "buttons": buttons,
