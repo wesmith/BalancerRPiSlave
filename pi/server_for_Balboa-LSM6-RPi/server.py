@@ -34,7 +34,7 @@ def status():
     buttons = a_star.read_buttons()
     #analog = a_star.read_analog() # WS
     vals = np.hstack([lsm6.read_device('accel'), lsm6.read_device('gyro')]) # WS
-    #analog = vals[0] # WS one number to start
+    analog = 10 # vals[0] # WS one number to start
     battery_millivolts = a_star.read_battery_millivolts()
     encoders = a_star.read_encoders()
     data = {
