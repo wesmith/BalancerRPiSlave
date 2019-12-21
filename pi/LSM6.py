@@ -22,7 +22,7 @@ class LSM6:
     self.DS33_WHO_ID = 0x69   # device ID
     self.sleep       = 0.0001 # WS made this a param: time to sleep in sec between write/read
                               # (this was 0.0001 in Pololu code: 100 us)
-    self.length      = 6      # length in bytes of data vector (low then high byte, each for x,y,z)
+    self.length      = 6      # length in bytes of data vec (low, high byte, each for x,y,z)
 
     # accelerometer settings
     self.OUTX_L_XL      = 0x28  # data array start (low then high byte, each for x,y,z)
@@ -91,12 +91,14 @@ class LSM6:
     # allow for different post-processing of accel or gyro values
     if dev_name == 'accel':
       mag = np.sqrt((vals*vals).sum())
-      return vals/mag # normalized
+      # normalized, scaled from 0 to 100, returned as signed int
+      return (100 * vals/mag).astype(int) 
     else:
       if calibrate: # find gyro_offset using raw values
         return vals
       else:
-        return (vals - self.gyro_offset) / self.gyro_scale # remove offset, scale => Pololu 'angleRate'
+        # remove offset, scale to Pololu 'angleRate', returned as signed int
+        return ((vals - self.gyro_offset) / self.gyro_scale).astype(int) 
 
 
   def setup(self):
