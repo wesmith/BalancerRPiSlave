@@ -18,16 +18,18 @@ while(True):
     accl = lsm6.read_device('accel')
     gyro = lsm6.read_device('gyro')
     
-    batt = star.read_battery_millivolts()
-    encs = star.read_encoders()
+    #batt = star.read_battery_millivolts()
+    #encs = star.read_encoders()
 
     star.write_y_gyro_rate(gyro[1])
 
+    '''
     try:
         print('batt: {} mV   encoders: {} {}'.format(batt[0], *encs))
     except:
         pdb.set_trace()
-
+    '''
+    
     txt = 'accl x,y,z: {:+4d}  {:+4d}  {:+4d}   gyro x,y,z: {:+6d}  {:+6d}  {:+6d}'.\
           format(*np.hstack([accl, gyro]))
     print(txt)
