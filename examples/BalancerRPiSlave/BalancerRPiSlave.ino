@@ -11,7 +11,7 @@
 // IE, THERE IS A WIRE CONFLICT WITH POLOLURPISLAVE
 
 #include <Balboa32U4.h>
-#include <Wire.h>
+//#include <Wire.h>  // WS
 #include <LSM6.h>
 #include "BalancerRPiSlave.h"
 #include <PololuRPiSlave.h>
@@ -35,6 +35,8 @@ struct Data
   char notes[14];
 
   int16_t leftEncoder, rightEncoder;
+
+  int16_t y_gyro_rate;  // WESmith
 };
 
 // set up template: 
