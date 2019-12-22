@@ -18,7 +18,7 @@ while(True):
     batt = star.read_battery_millivolts()
 
     txt = 'batt: {:+4d}  accl x,y,z: {:+4d}  {:+4d}  {:+4d}   gyro x,y,z: {:+6d}  {:+6d}  {:+6d}'.\
-          format(*np.hstack([accl, gyro]))
+          format(batt, *np.hstack([accl, gyro]))
     print(txt)
 
     time.sleep(0.01)
