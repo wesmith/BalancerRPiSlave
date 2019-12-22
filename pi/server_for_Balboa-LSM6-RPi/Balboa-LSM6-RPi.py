@@ -4,9 +4,9 @@
 
 # implement a non-flask testbed for communicating the lsm6 info from the RPi to the Balboa 32U4.
 
-import a_star as st
-import LSM6   as ls
-import numpy  as np
+import a_star_mod as st
+import LSM6       as ls
+import numpy      as np
 import time
 import pdb
 
@@ -21,8 +21,10 @@ while(True):
     batt = star.read_battery_millivolts()
     encs = star.read_encoders()
 
+    star.write_y_gyro_rate(gyro[1])
+
     try:
-        print('batt: {}  encoders: {} {}'.format(batt[0], *encs))
+        print('batt: {} mV   encoders: {} {}'.format(batt[0], *encs))
     except:
         pdb.set_trace()
 

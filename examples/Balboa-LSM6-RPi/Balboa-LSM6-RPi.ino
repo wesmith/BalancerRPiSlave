@@ -1,4 +1,4 @@
-// Balboa-LSM6-RPi, identical to BalboaRPiSlaveDemo.ino at present (12/20/19).
+// Balboa-LSM6-RPi, copied from BalboaRPiSlaveDemo.ino (12/20/19).
 // This program is enabling the Balboa's 32U4 chip as an I2C slave, and the python
 // script server.py for this program (different than server.py for
 // BalboaRPiSlaveDemo.ino) will access the 32U4 and also the Balboa's LSM6
@@ -48,6 +48,8 @@ struct Data
   char notes[14];
 
   int16_t leftEncoder, rightEncoder;
+
+  int16_t y_gyro_rate;  // WESmith
 };
 
 // set up template: PololuRPiSlave<class BufferType, unsigned int pi_delay_us>
@@ -65,6 +67,8 @@ void setup()
 {
   // Set up the slave at I2C address 20.
   slave.init(20);
+
+  Serial.begin(9600);  // WS
 
   // Play startup sound.
   buzzer.play("v10>>g16>>>c16");
@@ -112,6 +116,10 @@ void loop()
 
   slave.buffer.leftEncoder = encoders.getCountsLeft();
   slave.buffer.rightEncoder = encoders.getCountsRight();
+
+  // WS added
+  Serial.print(F("Y Gyro Rate: "));
+  Serial.println(slave.buffer.y_gyro_rate);
 
   // When you are done WRITING, call finalizeWrites() to make modified
   // data available to I2C master.
