@@ -7,6 +7,7 @@
 import a_star as st
 import LSM6   as ls
 import numpy  as np
+import time
 import pdb
 
 star = st.AStar()
@@ -20,7 +21,7 @@ while(True):
     batt = star.read_battery_millivolts()
 
     try:
-        print('batt: {}'.format(batt))
+        print('batt: {}'.format(batt[0]))
     except:
         pdb.set_trace()
 
