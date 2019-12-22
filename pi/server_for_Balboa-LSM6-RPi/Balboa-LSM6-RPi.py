@@ -7,6 +7,7 @@
 import a_star as st
 import LSM6   as ls
 import numpy  as np
+import pdb
 
 star = st.AStar()
 lsm6 = ls.LSM6()
@@ -15,10 +16,16 @@ while(True):
 
     accl = lsm6.read_device('accel')
     gyro = lsm6.read_device('gyro')
+    
     batt = star.read_battery_millivolts()
 
-    txt = 'batt: {:+4d}  accl x,y,z: {:+4d}  {:+4d}  {:+4d}   gyro x,y,z: {:+6d}  {:+6d}  {:+6d}'.\
-          format(batt, *np.hstack([accl, gyro]))
+    try:
+        print('batt: {}'.format(batt))
+    except:
+        pdb.set_trace()
+
+    txt = 'accl x,y,z: {:+4d}  {:+4d}  {:+4d}   gyro x,y,z: {:+6d}  {:+6d}  {:+6d}'.\
+          format(*np.hstack([accl, gyro]))
     print(txt)
 
     time.sleep(0.01)
