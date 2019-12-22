@@ -23,24 +23,24 @@ Balboa32U4ButtonA buttonA;
 Balboa32U4ButtonB buttonB;
 Balboa32U4ButtonC buttonC;
 
-//PololuRPiSlave<struct Data, 20> slave; 
-
 void setup()
 {
   // Uncomment these lines if the motors are reversed.
   // motors.flipLeftMotor(true);
   // motors.flipRightMotor(true);
 
-  // Set up the slave at I2C address 20.
+  // Set up the slave at I2C address 20 (0x14)
   slave.init(20);
-
+  
+  // WS go thru update, write cycle with buffer to ensure initialization
+  slave.updateBuffer();  
+  slave.finalizeWrites();
+  
   //Serial.begin(9600);  // see if turning this off fixes compile problem: no
 
   ledYellow(0);
   ledRed(1);
   ledRed(0);
-
-  //balanceSetup();  // this is now a no-op: gyro calibration already performed on RPi
 }
 
 const char song[] PROGMEM =
