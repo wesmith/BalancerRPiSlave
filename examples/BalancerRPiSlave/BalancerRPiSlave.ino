@@ -1,20 +1,11 @@
 // BalancerRPiSlave.ino
 // WSmith modified this from Balancer.ino and BalboaRPiSlaveDemo.ino, 
-// 12/16/19
+// 12/22/19
 // Run the Balboa balancer as an I2C slave from an RPi I2C master.
 // See Balancer.ino comments (deleted here) for more info 
 // about the balancer.
 
-// THIS CANNOT WORK AS SET UP: THE RPI MASTER I2C IS CONFLICTING WITH THE 
-// ARDUINO AS MASTER i2C WITH THE IMU (AND PERHAPS OTHER ITEMS)
-// NEED TO ACCESS THE IMU, ENCODERS, ETC JUST FROM THE RPI
-// IE, THERE IS A WIRE CONFLICT WITH POLOLURPISLAVE
-
-#include <Balboa32U4.h>
-//#include <Wire.h>  // WS
-#include <LSM6.h>
 #include "BalancerRPiSlave.h"
-#include <PololuRPiSlave.h>
 
 // I2C slave setup
 // Custom data structure used for interpreting the buffer.
@@ -22,37 +13,17 @@
 // data format is changed, make sure to update the corresponding 
 // code in a_star.py on the Raspberry Pi.
 
-struct Data
-{
-  bool yellow, green, red;
-  bool buttonA, buttonB, buttonC;
-
-  int16_t leftMotor, rightMotor;
-  uint16_t batteryMillivolts;
-  uint16_t analog[6];
-
-  bool playNotes;
-  char notes[14];
-
-  int16_t leftEncoder, rightEncoder;
-
-  int16_t y_gyro_rate;  // WESmith
-};
-
-// set up template: 
-// PololuRPiSlave<class BufferType, unsigned int pi_delay_us>
-// pi_delay_us should be set to 20 for the RPI 3b: that worked 12/13/19
+// had to define this in .h file with 'extern' to compile
 PololuRPiSlave<struct Data, 20> slave; 
 
-// end I2C slave setup
-
-LSM6 imu;
 Balboa32U4Motors motors;
 Balboa32U4Encoders encoders;
 Balboa32U4Buzzer buzzer;
 Balboa32U4ButtonA buttonA;
 Balboa32U4ButtonB buttonB;
 Balboa32U4ButtonC buttonC;
+
+//PololuRPiSlave<struct Data, 20> slave; 
 
 void setup()
 {
@@ -67,8 +38,9 @@ void setup()
 
   ledYellow(0);
   ledRed(1);
-  balanceSetup();
   ledRed(0);
+
+  //balanceSetup();  // this is now a no-op: gyro calibration already performed on RPi
 }
 
 const char song[] PROGMEM =
@@ -143,7 +115,8 @@ void loop()
 {
   // Call updateBuffer() before using the buffer, to get the latest
   // data including recent master writes.
-  slave.updateBuffer();
+  // for now just call this in balanceUpdateSensors() WS
+  //slave.updateBuffer();
 
   static bool enableSong = false;
   static bool enableDrive = false;
@@ -207,5 +180,6 @@ void loop()
   }
   // When WRITING is finished, call finalizeWrites() to make modified
   // data available to the I2C master.
-  slave.finalizeWrites();
+  // turn this off for now WS
+  //slave.finalizeWrites();
 }

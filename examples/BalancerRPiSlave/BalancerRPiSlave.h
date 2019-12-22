@@ -1,8 +1,32 @@
 #pragma once
 
 #include <stdint.h>
-#include <LSM6.h>
 #include <Balboa32U4.h>
+#include <PololuRPiSlave.h>
+
+// WS moved slave here from .ino
+struct Data
+{
+  bool yellow, green, red;
+  bool buttonA, buttonB, buttonC;
+
+  int16_t leftMotor, rightMotor;
+  uint16_t batteryMillivolts;
+  uint16_t analog[6];
+
+  bool playNotes;
+  char notes[14];
+
+  int16_t leftEncoder, rightEncoder;
+
+  int16_t y_gyro_rate;  // WESmith
+};
+
+// set up template: 
+// PololuRPiSlave<class BufferType, unsigned int pi_delay_us>
+// pi_delay_us should be set to 20 for the RPI 3b: that worked 12/13/19
+extern PololuRPiSlave<struct Data, 20> slave; 
+
 
 // This code was developed for a Balboa unit using 50:1 motors
 // and 45:21 plastic gears, for an overall gear ratio of 111.
@@ -100,12 +124,12 @@ extern int32_t angleRate; // units: degrees/s (or millidegrees/ms)
 extern int16_t motorSpeed; // current (average) motor speed setting
 
 // These variables must be defined in your sketch.
-extern LSM6 imu;
+// extern LSM6 imu;  // WS imu handled by RPi now
 extern Balboa32U4Motors motors;
 extern Balboa32U4Encoders encoders;
 
 // Call this in your setup() to initialize and calibrate the IMU.
-void balanceSetup();
+//void balanceSetup();  // WS a no-op with RPi
 
 // Call this in loop() to run the full balancing algorithm.
 void balanceUpdate();

@@ -1,4 +1,3 @@
-#include <Wire.h>
 #include "BalancerRPiSlave.h"
 
 int32_t gYZero;
@@ -14,6 +13,7 @@ int16_t motorSpeed;
 bool isBalancingStatus = false;
 bool balanceUpdateDelayedStatus;
 
+
 bool isBalancing()
 {
   return isBalancingStatus;
@@ -24,34 +24,10 @@ bool balanceUpdateDelayed()
   return balanceUpdateDelayedStatus;
 }
 
-void balanceSetup()
+void balanceSetup()  // no-op now
 {
-  // Initialize IMU.
-  Wire.begin();
-  if (!imu.init())
-  {
-    while(true)
-    {
-      Serial.println("Failed to detect and initialize IMU!");
-      delay(200);
-    }
-  }
-  imu.enableDefault();
-  imu.writeReg(LSM6::CTRL2_G, 0b01011000); // 208 Hz, 1000 deg/s
-
-  // Wait for IMU readings to stabilize.
-  delay(1000);
-
-  // Calibrate the gyro.
-  int32_t total = 0;
-  for (int i = 0; i < CALIBRATION_ITERATIONS; i++)
-  {
-    imu.read();
-    total += imu.g.y;
-    delay(1);
-  }
-
-  gYZero = total / CALIBRATION_ITERATIONS;
+  // All LSM6 readings now done by the RPi. The 32U4 has no knowledge of the LSM6.
+  // Gyro is already calibrated in slave.buffer.y_gyro_rate
 }
 
 // This function contains the core algorithm for balancing a
@@ -124,7 +100,9 @@ void lyingDown()
     // robot's rest angle.  The atan2 function returns a result
     // in radians, so we multiply it by 180000/pi to convert it
     // to millidegrees.
-    angle = atan2(imu.a.z, imu.a.x) * 57296;
+
+    // WS turn this off for now: not getting accel from slave.buffer yet
+    // angle = atan2(imu.a.z, imu.a.x) * 57296;
 
     distanceLeft = 0;
     distanceRight = 0;
@@ -134,7 +112,8 @@ void lyingDown()
 void integrateGyro()
 {
   // Convert from full-scale 1000 deg/s to deg/s.
-  angleRate = (imu.g.y - gYZero) / 29;
+  //angleRate = (imu.g.y - gYZero) / 29;
+  angleRate = slave.buffer.y_gyro_rate;  // calibration already done on RPi
 
   angle += angleRate * UPDATE_TIME_MS;
 }
@@ -176,7 +155,7 @@ void balanceResetEncoders()
 
 void balanceUpdateSensors()
 {
-  imu.read();
+  slave.updateBuffer();  // WS get data from RPi 
   integrateGyro();
   integrateEncoders();
 }
