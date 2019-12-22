@@ -19,9 +19,10 @@ while(True):
     gyro = lsm6.read_device('gyro')
     
     batt = star.read_battery_millivolts()
+    encs = star.read_encoders()
 
     try:
-        print('batt: {}'.format(batt[0]))
+        print('batt: {}  encoders: {}'.format(batt[0], *encs))
     except:
         pdb.set_trace()
 
