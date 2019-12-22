@@ -22,7 +22,7 @@ while(True):
     encs = star.read_encoders()
 
     try:
-        print('batt: {}  encoders: {}'.format(batt[0], *encs))
+        print('batt: {}  encoders: {} {}'.format(batt[0], *encs))
     except:
         pdb.set_trace()
 
