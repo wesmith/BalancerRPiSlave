@@ -21,7 +21,10 @@ while(True):
     #batt = star.read_battery_millivolts()
     #encs = star.read_encoders()
 
-    star.write_y_gyro_rate(gyro[1])
+    try:
+        star.write_y_gyro_rate(gyro[1])
+    except:
+        pdb.set_trace()
 
     '''
     try:
