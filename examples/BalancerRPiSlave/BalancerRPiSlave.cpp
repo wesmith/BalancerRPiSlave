@@ -27,7 +27,7 @@ bool balanceUpdateDelayed()
 void balanceSetup()  // no-op now
 {
   // All LSM6 readings now done by the RPi. The 32U4 has no knowledge of the LSM6.
-  // Gyro is already calibrated in slave.buffer.y_gyro_rate
+  // Gyro is already calibrated in slave.buffer.gyro_rate
 }
 
 // This function contains the core algorithm for balancing a
@@ -113,7 +113,7 @@ void integrateGyro()
 {
   // Convert from full-scale 1000 deg/s to deg/s.
   //angleRate = (imu.g.y - gYZero) / 29;
-  angleRate = slave.buffer.y_gyro_rate;  // calibration already done on RPi
+  angleRate = slave.buffer.gyro_rate[1];  // WS y_rate, calibration already done on RPi
 
   angle += angleRate * UPDATE_TIME_MS;
 }

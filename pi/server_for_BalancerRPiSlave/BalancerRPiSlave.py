@@ -22,7 +22,8 @@ while(True):
     #encs = star.read_encoders()
 
     try:
-        star.write_y_gyro_rate(gyro[1])
+        star.write_gyro_rate(gyro) # full vector
+        star.write_accel(accl)     # full vector
     except:
         pdb.set_trace()
     

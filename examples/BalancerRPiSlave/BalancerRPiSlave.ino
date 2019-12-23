@@ -36,7 +36,7 @@ void setup()
   slave.updateBuffer();  
   slave.finalizeWrites();
   
-  //Serial.begin(9600);  // see if turning this off fixes compile problem: no
+  Serial.begin(9600);  // WS
 
   ledYellow(0);
   ledRed(1);
@@ -167,7 +167,14 @@ void loop()
   Serial.print("  estimate of ANGLE_RATE_RATIO: ");
   Serial.println(float(angle) / float(angleRate));
   */
- 
+  Serial.print("Gyro rates x,y,z  Accel x,y,z");
+  Serial.print(slave.buffer.gyro_rate[0]);
+  Serial.print(slave.buffer.gyro_rate[1]);
+  Serial.print(slave.buffer.gyro_rate[2]);
+  Serial.print(slave.buffer.accel[0]);
+  Serial.print(slave.buffer.accel[1]);
+  Serial.println(slave.buffer.accel[2]);
+
   if (fallingAngleOffset > 0)
   {
     ledYellow(1);

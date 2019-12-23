@@ -19,7 +19,8 @@ struct Data
 
   int16_t leftEncoder, rightEncoder;
 
-  int16_t y_gyro_rate;  // WESmith
+  int16_t gyro_rate[3];  // WS
+  int16_t accel[3];      // WS
 };
 
 // set up template: 
