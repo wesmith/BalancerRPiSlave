@@ -53,11 +53,11 @@ class AStar:
   def read_encoders(self):
     return self.read_unpack(39, 4, 'hh')
 
-  def write_gyro_rate(self, gyro_rate):  # WS
-    self.write_pack(43, 'hhh', gyro_rate)
+  def write_gyro_rate(self, *gyro_rate):  # WS
+    self.write_pack(43, 'hhh', *gyro_rate)
 
-  def write_accel(self, accel):  # WS
-    self.write_pack(49, 'hhh', accel)
+  def write_accel(self, *accel):  # WS
+    self.write_pack(49, 'hhh', *accel)
 
   def test_read8(self):
     self.read_unpack(0, 8, 'cccccccc')

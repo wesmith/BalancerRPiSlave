@@ -15,17 +15,17 @@ lsm6 = ls.LSM6()
 
 while(True):
 
-    accl = lsm6.read_device('accel')
-    gyro = lsm6.read_device('gyro')
+    accl = list(lsm6.read_device('accel'))
+    gyro = list(lsm6.read_device('gyro'))
     
     #batt = star.read_battery_millivolts()
     #encs = star.read_encoders()
 
-    try:
-        star.write_gyro_rate(gyro) # full vector
-        star.write_accel(accl)     # full vector
-    except:
-        pdb.set_trace()
+    #try:
+    star.write_gyro_rate(*gyro) # full vector
+    star.write_accel(*accl)     # full vector
+    #except:
+        #pdb.set_trace()
     
     '''
     try:
