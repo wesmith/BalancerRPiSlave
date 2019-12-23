@@ -167,13 +167,14 @@ void loop()
   Serial.print("  estimate of ANGLE_RATE_RATIO: ");
   Serial.println(float(angle) / float(angleRate));
   */
-  Serial.print("Gyro rates x,y,z  Accel x,y,z");
-  Serial.print(slave.buffer.gyro_rate[0]);
-  Serial.print(slave.buffer.gyro_rate[1]);
-  Serial.print(slave.buffer.gyro_rate[2]);
-  Serial.print(slave.buffer.accel[0]);
-  Serial.print(slave.buffer.accel[1]);
-  Serial.println(slave.buffer.accel[2]);
+  /*
+  // the following printout is successful WS
+  char txt[60];
+  sprintf(txt, "Gyro rates X %4d  Y %4d  Z %4d   Accel X %4d  Y %4d  Z %4d", 
+  slave.buffer.gyro_rate[0], slave.buffer.gyro_rate[1], slave.buffer.gyro_rate[2],
+  slave.buffer.accel[0],     slave.buffer.accel[1],     slave.buffer.accel[2]);
+  Serial.println(txt);
+  */
 
   if (fallingAngleOffset > 0)
   {

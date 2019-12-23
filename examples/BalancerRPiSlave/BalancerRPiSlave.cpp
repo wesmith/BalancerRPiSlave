@@ -96,13 +96,24 @@ void lyingDown()
 
   if (angleRate > -2 && angleRate < 2)
   {
-    // It's really calm, so use the accelerometer to measure the
-    // robot's rest angle.  The atan2 function returns a result
-    // in radians, so we multiply it by 180000/pi to convert it
+    // Use the accelerometer to measure the robot's rest angle when the angle rate is very low.
+    // This is necessary for condition 1) below and useful for condition 2) below. 
+    // A low rate occurs when 1) the robot is lying down (0 rate), or 2) when it is balancing stably
+    // (close to 0 rate). 
+    // 1) When the robot is lying down, this thus sets the robot's starting angle to 90 deg (x, y of
+    // the Pololu board are parallel to the ground, z is up, so that 
+    // z accel is +g (scaled), and x accel is 0, thus atan2(1,0) = 90 deg). This is a necessary requirement
+    // for balancing to start, as the robot is tipped up beyond the START_BALANCING_ANGLE from its initial value
+    // of 90 deg. 
+    // 2) When the robot is balancing stably, the robot angle is reset to 0 deg or close to 0 deg (x is now pointing up, 
+    // y and z are parallel to the ground: atan2(0,1) = 0 deg). This is less critical than 1) above, and facilitates 
+    // a reset of angle when balancing, removing gyro biases. 
+    // The atan2 function returns a result in radians; multiply by 180000/pi to convert it
     // to millidegrees.
 
-    // WS turn this off for now: not getting accel from slave.buffer yet
+    // WS getting accel from slave.buffer now
     // angle = atan2(imu.a.z, imu.a.x) * 57296;
+    angle = atan2(slave.buffer.accel[2], slave.buffer.accel[0]) * 57296;
 
     distanceLeft = 0;
     distanceRight = 0;

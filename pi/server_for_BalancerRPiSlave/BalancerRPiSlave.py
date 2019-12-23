@@ -13,6 +13,10 @@ import pdb
 star = st.AStar()
 lsm6 = ls.LSM6()
 
+SLEEP = 0.001
+
+print('Running BalancerRPiSlave.py')
+
 while(True):
 
     accl = list(lsm6.read_device('accel'))
@@ -34,8 +38,8 @@ while(True):
         pdb.set_trace()
     '''
     
-    txt = 'accl x,y,z: {:+4d}  {:+4d}  {:+4d}   gyro x,y,z: {:+6d}  {:+6d}  {:+6d}'.\
-          format(*np.hstack([accl, gyro]))
-    print(txt)
+    #txt = 'accl x,y,z: {:+4d}  {:+4d}  {:+4d}   gyro x,y,z: {:+6d}  {:+6d}  {:+6d}'.\
+    #      format(*np.hstack([accl, gyro]))
+    #print(txt)
 
-    time.sleep(0.01)
+    time.sleep(SLEEP)
