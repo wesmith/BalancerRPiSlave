@@ -37,7 +37,7 @@ while(True):
     star.write_accel(*accl)     # full vector
 
     if (dtime > 3) and (dtime < 5):
-        data.append(np.hstack([accl, gyro]))
+        data.append(np.hstack([dtime, accl, gyro]))
 
     if (dtime > 6) and (not saved):
         print('saving data')
