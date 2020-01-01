@@ -32,7 +32,8 @@ while(True):
     star.write_gyro_rate(*gyro) # full vector
     star.write_accel(*accl)     # full vector
 
-    if (k > 3000) and (k < 6000): 
+    if (k > 3000) and (k < 6000):
+        print(k)
         data.append(np.hstack([accl, gyro]))
 
     if k == 7000:
