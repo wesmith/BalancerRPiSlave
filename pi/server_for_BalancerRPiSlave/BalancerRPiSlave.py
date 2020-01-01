@@ -39,7 +39,8 @@ while(True):
     if (dtime > 3) and (dtime < 5):
         data.append(np.hstack([accl, gyro]))
 
-    if (dtime > 6) and !saved:
+    if (dtime > 6) and (not saved):
+        print('saving data')
         data  = np.array(data)
         saved = True
         np.save('tmp_data', data)
