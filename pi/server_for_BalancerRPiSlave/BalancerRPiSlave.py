@@ -22,6 +22,7 @@ data = []
 
 while(True):
 #while(k < 100):
+    print(k)
 
     accl = list(lsm6.read_device('accel'))
     gyro = list(lsm6.read_device('gyro'))
