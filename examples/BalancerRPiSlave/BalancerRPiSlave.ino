@@ -188,6 +188,6 @@ void loop()
   }
   // When WRITING is finished, call finalizeWrites() to make modified
   // data available to the I2C master.
-  // turn this off for now WS
+  // WS turn this off here for now: need to turn on if passing motor info to the python for plotting
   //slave.finalizeWrites();
 }
