@@ -16,14 +16,17 @@ lsm6 = ls.LSM6()
 SLEEP = 0.001
 
 print('Running BalancerRPiSlave.py')
+start_time = time.time()
 
-k    = 0
-data = []
+data  = []
+saved = False
 
 while(True):
 #while(k < 100):
-    print(k)
-
+    
+    now   = time.time()
+    dtime = now - start_time
+    
     accl = list(lsm6.read_device('accel'))
     gyro = list(lsm6.read_device('gyro'))
     
@@ -33,13 +36,13 @@ while(True):
     star.write_gyro_rate(*gyro) # full vector
     star.write_accel(*accl)     # full vector
 
-    if (k > 3000) and (k < 6000):
-        print(k)
+    if (dtime > 3) and (dtime < 5):
         data.append(np.hstack([accl, gyro]))
 
-    if k == 7000:
-        data = np.array(data)
-        print(data)
+    if (dtime > 6) and !saved:
+        data  = np.array(data)
+        saved = True
+        np.save('tmp_data', data)
     
     '''
     try:
@@ -53,8 +56,5 @@ while(True):
           format(*np.hstack([accl, gyro]))
     print(txt)
     '''
-    k += 1
     time.sleep(SLEEP)
 
-#data = np.array(data)
-#print (data)
