@@ -7,6 +7,7 @@
 import a_star_mod as st
 import LSM6       as ls
 import numpy      as np
+import matplotlib.pyplot as plt
 import time
 import pdb
 
@@ -17,7 +18,11 @@ SLEEP = 0.001
 
 print('Running BalancerRPiSlave.py')
 
-while(True):
+k    = 0
+data = []
+
+#while(True):
+while(k < 100):
 
     accl = list(lsm6.read_device('accel'))
     gyro = list(lsm6.read_device('gyro'))
@@ -25,11 +30,10 @@ while(True):
     #batt = star.read_battery_millivolts()
     #encs = star.read_encoders()
 
-    #try:
     star.write_gyro_rate(*gyro) # full vector
     star.write_accel(*accl)     # full vector
-    #except:
-        #pdb.set_trace()
+
+    data.append(np.hstack([accl, gyro]))
     
     '''
     try:
@@ -37,9 +41,14 @@ while(True):
     except:
         pdb.set_trace()
     '''
-    
+
+    '''
     txt = 'accl x,y,z: {:+4d}  {:+4d}  {:+4d}   gyro x,y,z: {:+6d}  {:+6d}  {:+6d}'.\
           format(*np.hstack([accl, gyro]))
     print(txt)
-
+    '''
+    k += 1
     time.sleep(SLEEP)
+
+data = np.array(data)
+print (data)
