@@ -7,7 +7,6 @@
 import a_star_mod as st
 import LSM6       as ls
 import numpy      as np
-import matplotlib.pyplot as plt
 import time
 import pdb
 
