@@ -38,8 +38,8 @@ while(True):
         pdb.set_trace()
     '''
     
-    #txt = 'accl x,y,z: {:+4d}  {:+4d}  {:+4d}   gyro x,y,z: {:+6d}  {:+6d}  {:+6d}'.\
-    #      format(*np.hstack([accl, gyro]))
-    #print(txt)
+    txt = 'accl x,y,z: {:+4d}  {:+4d}  {:+4d}   gyro x,y,z: {:+6d}  {:+6d}  {:+6d}'.\
+          format(*np.hstack([accl, gyro]))
+    print(txt)
 
     time.sleep(SLEEP)
