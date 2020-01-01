@@ -36,10 +36,10 @@ while(True):
     star.write_gyro_rate(*gyro) # full vector
     star.write_accel(*accl)     # full vector
 
-    if (dtime > 3) and (dtime < 5):
+    if (dtime > 3) and (dtime < 10):
         data.append(np.hstack([dtime, accl, gyro]))
 
-    if (dtime > 6) and (not saved):
+    if (dtime > 11) and (not saved):
         print('saving data')
         data  = np.array(data)
         saved = True
@@ -57,5 +57,5 @@ while(True):
           format(*np.hstack([accl, gyro]))
     print(txt)
     '''
-    time.sleep(SLEEP)
+    #time.sleep(SLEEP)
 
