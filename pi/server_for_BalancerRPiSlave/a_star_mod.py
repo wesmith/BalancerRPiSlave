@@ -41,6 +41,9 @@ class AStar:
   def motors(self, left, right):
     self.write_pack(6, 'hh', left, right)
 
+  def read_motors(self):
+    return self.read_unpack(6, 4, 'hh')
+
   def read_battery_millivolts(self):
     return self.read_unpack(10, 2, "H")
 

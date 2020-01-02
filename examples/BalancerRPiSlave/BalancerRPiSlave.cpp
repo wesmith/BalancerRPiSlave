@@ -81,9 +81,15 @@ void balance()
   // robot to perform controlled turns.
   int16_t distanceDiff = distanceLeft - distanceRight;
 
-  motors.setSpeeds(
-    motorSpeed + distanceDiff * DISTANCE_DIFF_RESPONSE / 100,
-    motorSpeed - distanceDiff * DISTANCE_DIFF_RESPONSE / 100);
+  int16_t motor_left, motor_right;  // WS make variables to allow saving to I2C buffer
+
+  motor_left  = motorSpeed + distanceDiff * DISTANCE_DIFF_RESPONSE / 100; 
+  motor_right = motorSpeed - distanceDiff * DISTANCE_DIFF_RESPONSE / 100;
+
+  motors.setSpeeds(motor_left, motor_right);
+
+  slave.buffer.leftMotor  = motor_left;
+  slave.buffer.rightMotor = motor_right;
 }
 
 void lyingDown()
@@ -133,12 +139,16 @@ void integrateEncoders()
 {
   static int16_t lastCountsLeft;
   int16_t countsLeft = encoders.getCountsLeft();
+  slave.buffer.leftEncoder = countsLeft; // WS add encoder to I2C buffer
+  
   speedLeft = (countsLeft - lastCountsLeft);
   distanceLeft += countsLeft - lastCountsLeft;
   lastCountsLeft = countsLeft;
 
   static int16_t lastCountsRight;
   int16_t countsRight = encoders.getCountsRight();
+  slave.buffer.rightEncoder = countsRight; // WS add encoder to I2C buffer
+
   speedRight = (countsRight - lastCountsRight);
   distanceRight += countsRight - lastCountsRight;
   lastCountsRight = countsRight;

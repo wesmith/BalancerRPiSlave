@@ -31,13 +31,16 @@ while(True):
     gyro = list(lsm6.read_device('gyro'))
     
     #batt = star.read_battery_millivolts()
-    #encs = star.read_encoders()
+    encs   = list(star.read_encoders())
+    motors = list(star.read_motors())
 
     star.write_gyro_rate(*gyro) # full vector
     star.write_accel(*accl)     # full vector
 
     if (dtime > 3) and (dtime < 10):
-        data.append(np.hstack([dtime, accl, gyro]))
+        #data.append(np.hstack([dtime, accl, gyro]))
+        # save time, motorX, motorY, encoderX, encoderY, gyro_rate_y
+        data.append(np.hstack([dtime, motors, encs, gyro[1]])
 
     if (dtime > 11) and (not saved):
         print('saving data')
