@@ -46,7 +46,7 @@ while(True):
         data.append(np.hstack([dtime, motors, encs, gyro[1]]))
 
     if (dtime > (DATA_STOP_TIME + 1)) and (not saved):
-        fname = time.strftime('%Y%m%d-%H%M%S')
+        fname = 'data/{}'.format(time.strftime('%Y%m%d-%H%M%S'))
         print('saving data in {}'.format(fname))
         data  = np.array(data)
         saved = True
