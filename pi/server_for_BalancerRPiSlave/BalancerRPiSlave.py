@@ -3,6 +3,9 @@
 # WESmith 12/22/19
 
 # implement a non-flask testbed for communicating lsm6 info from the RPi to the Balboa 32U4
+# NOTE: the Balboa balancer must be in its horizontal position (x-axis horizontal,
+#       z-axis up) when this script is started, so that accl[0] (the x-axis g vector) is
+#       close to zero
 
 import a_star_mod as st
 import LSM6       as ls
@@ -18,6 +21,8 @@ DELAY_TIME =  2.0 # time to delay data acquisition after balancing starts
 X_ACCEL    =  700 # the value of x_accel at which balancing has presumably commenced
                   # (Balboa x axis is pointed vertically when perfectly balancing:
                   #  this value is then close to 1000; it is close to 0 when Balboa is horiz)
+data = []
+
 #SLEEP = 0.001
 
 print('Running BalancerRPiSlave.py')
@@ -37,16 +42,14 @@ while(True):
     if (accl[0] < X_ACCEL): # initialize or reset: not balancing
         START_TIMER = True
         START_DATA  = False
-        data        = []
-        print('**** INITIALIZING/RESETTING ****')
+        #print('**** INITIALIZING/RESETTING ****\n')
 
     if (accl[0] > X_ACCEL) and START_TIMER:
         start_time  = time.time()
         START_TIMER = False
         START_DATA  = True
-        print('\n**** STARTING to ACQUIRE DATA ****')
+        print('\n**** ACQUIRING DATA IN {} SECONDS ****'.format(DELAY_TIME))
 
-    #if (dtime > DATA_START_TIME) and (dtime < DATA_STOP_TIME):
     if START_DATA:
         dtime = time.time() - start_time
         #data.append(np.hstack([dtime, accl, gyro]))
@@ -59,9 +62,9 @@ while(True):
             START_DATA = False
             fname = 'data/{}'.format(time.strftime('%Y%m%d-%H%M%S'))
             print('**** SAVING DATA IN {} ****'.format(fname))
-            #data  = np.array(data)  # save without making an array: save time?
             np.save(fname, data)
             print('**** SAVE COMPLETE ****\n')
+            data = []  # reset if another unbalance/balance cycle is started
     
     '''
     try:
