@@ -38,11 +38,13 @@ while(True):
         START_TIMER = True
         START_DATA  = False
         data        = []
+        print('**** INITIALIZING/RESETTING ****')
 
     if (accl[0] > X_ACCEL) and START_TIMER:
         start_time  = time.time()
         START_TIMER = False
         START_DATA  = True
+        print('\n**** STARTING to ACQUIRE DATA ****')
 
     #if (dtime > DATA_START_TIME) and (dtime < DATA_STOP_TIME):
     if START_DATA:
@@ -56,10 +58,10 @@ while(True):
         if dtime > (DELAY_TIME + DATA_TIME):
             START_DATA = False
             fname = 'data/{}'.format(time.strftime('%Y%m%d-%H%M%S'))
-            print('saving data in {}'.format(fname))
+            print('**** SAVING DATA IN {} ****'.format(fname))
             #data  = np.array(data)  # save without making an array: save time?
             np.save(fname, data)
-            print('save complete')
+            print('**** SAVE COMPLETE ****\n')
     
     '''
     try:
