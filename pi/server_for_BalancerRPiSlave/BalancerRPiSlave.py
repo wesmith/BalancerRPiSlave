@@ -2,7 +2,7 @@
 
 # WESmith 12/22/19
 
-# implement a non-flask testbed for communicating the lsm6 info from the RPi to the Balboa 32U4.
+# implement a non-flask testbed for communicating lsm6 info from the RPi to the Balboa 32U4
 
 import a_star_mod as st
 import LSM6       as ls
@@ -11,19 +11,16 @@ import time
 import pdb
 
 star = st.AStar()
-lsm6 = ls.LSM6()
+lsm6 = ls.LSM6()  # this automatically calibrates gyro
 
-DATA_TIME  = 5.0 # time in seconds to acquire data
-DELAY_TIME = 2.0 # time to delay data acquisition after balancing starts
-X_ACCEL    = 700 # the value of x_accel at which balancing has presumably commenced
-                 # (Balboa x axis is pointed vertically when perfectly balancing:
-                 #  this value is then close to 1000; it is close to 0 when Balboa is horiz)
+DATA_TIME  = 10.0 # time in seconds to acquire data
+DELAY_TIME =  2.0 # time to delay data acquisition after balancing starts
+X_ACCEL    =  700 # the value of x_accel at which balancing has presumably commenced
+                  # (Balboa x axis is pointed vertically when perfectly balancing:
+                  #  this value is then close to 1000; it is close to 0 when Balboa is horiz)
 #SLEEP = 0.001
 
 print('Running BalancerRPiSlave.py')
-
-data  = []
-saved = False
 
 while(True):
     
@@ -40,6 +37,7 @@ while(True):
     if (accl[0] < X_ACCEL): # initialize or reset: not balancing
         START_TIMER = True
         START_DATA  = False
+        data        = []
 
     if (accl[0] > X_ACCEL) and START_TIMER:
         start_time  = time.time()
